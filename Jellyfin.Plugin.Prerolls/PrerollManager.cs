@@ -8,15 +8,15 @@ using System.Text.RegularExpressions;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 
-namespace Jellyfin.Plugin.Intros
+namespace Jellyfin.Plugin.Prerolls
 {
-    public class IntroManager
+    public class PrerollManager
     {
         private readonly CookieContainer _cookieContainer = new CookieContainer();
 
         private readonly Random _random = new Random();
 
-        private readonly int[] _intros = {
+        private readonly int[] _prerolls = {
             459725398,
             440978154,
             440793415,
@@ -58,7 +58,7 @@ namespace Jellyfin.Plugin.Intros
             445012069
         };
 
-        private readonly string _cache = Plugin.ApplicationPaths.CachePath + "/intros/";
+        private readonly string _cache = Plugin.ApplicationPaths.CachePath + "/prerolls/";
 
         public IEnumerable<IntroInfo> Get()
         {
@@ -68,14 +68,12 @@ namespace Jellyfin.Plugin.Intros
                 Cache(Plugin.DefaultIntro);
             }
 
-            var path = Intro(Plugin.Instance.Configuration.Intro, Plugin.Instance.Configuration.Resolution);
+            var path = Intro(Plugin.Instance.Configuration.Preroll, Plugin.Instance.Configuration.Resolution);
             var selection = Plugin.Instance.Configuration.Intro;
 
             if (Plugin.Instance.Configuration.Local != string.Empty)
             {
-                Local(Plugin.Instance.Configuration.Local);
-
-                path = Plugin.Instance.Configuration.Local;
+                path = Local(Plugin.Instance.Configuration.Local);
             }
             else if (Plugin.Instance.Configuration.Vimeo != string.Empty)
             {
@@ -105,13 +103,14 @@ namespace Jellyfin.Plugin.Intros
             };
         }
 
-        private void Local(string path)
+        private string Local(string path)
         {
             var options = new List<string>();
             var location = File.GetAttributes(path);
+
             if (location.HasFlag(FileAttributes.Directory))
             {
-                options.AddRange(Directory.EnumerateFiles(path).ToList());
+                options.AddRange(Directory.EnumerateFiles(path));
             }
             else
             {
@@ -120,6 +119,8 @@ namespace Jellyfin.Plugin.Intros
 
             var selection = options[_random.Next(options.Count)];
             UpdateLibrary(Path.GetFileName(selection), selection);
+            
+            return selection;
         }
 
         private void Cache(int intro)
@@ -255,9 +256,9 @@ namespace Jellyfin.Plugin.Intros
             Plugin.LibraryManager.CreateItem(video, null);
         }
 
-        private string Intro(int intro, int resolution)
+        private string Preroll(int preroll, int resolution)
         {
-            return _cache + intro + "-" + resolution + ".mp4";
+            return _cache + preroll + "-" + resolution + ".mp4";
         }
     }
 }

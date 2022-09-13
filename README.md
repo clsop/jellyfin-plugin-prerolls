@@ -1,8 +1,11 @@
-<h1 align="center">Jellyfin Intros Plugin</h1>
+<h1 align="center">Jellyfin Prerolls Plugin</h1>
 <h3 align="center">Part of the <a href="https://jellyfin.org">Jellyfin Project</a></h3>
 
 <p align="center">
-This is a plugin built with DotNet that can download flashy intros from <a href="https://prerolls.video">prerolls.video</a> for your movies.
+This is a plugin built with DotNet that can download flashy prerolls from <a href="https://prerolls.video">prerolls.video</a> for your movies or use your own custom ones.
+You can Organize prerolls by genre to make content play with certan prerolls for the genre.
+
+Based on <a href="https://github.com/dkanada/jellyfin-plugin-intros">dkanada</a>'s work.
 </p>
 
 ## Install

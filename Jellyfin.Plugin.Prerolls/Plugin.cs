@@ -1,21 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Jellyfin.Plugin.Intros.Configuration;
+using Jellyfin.Plugin.Prerolls.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
 
-namespace Jellyfin.Plugin.Intros
+namespace Jellyfin.Plugin.Prerolls
 {
     public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     {
-        public override string Name => "Intros";
+        public override string Name => "Prerolls";
 
-        public override Guid Id => Guid.Parse("9482dc3b-48aa-4d3b-8224-9128d1e8e0cd");
+        public override Guid Id => Guid.Parse("40ebce45-fe78-4e84-b819-3a9f537da73c");
 
-        public const int DefaultIntro = 443404335;
+        public const int DefaultPreroll = 443404335;
 
         public const int DefaultResolution = 1080;
 

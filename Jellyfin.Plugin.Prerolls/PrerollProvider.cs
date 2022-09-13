@@ -5,19 +5,19 @@ using Jellyfin.Data.Entities;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 
-namespace Jellyfin.Plugin.Intros
+namespace Jellyfin.Plugin.Prerolls
 {
-    public class IntroProvider : IIntroProvider
+    public class PrerollProvider : IIntroProvider
     {
-        public string Name { get; } = "Intros";
+        public string Name { get; } = "Prerolls";
 
-        public Task<IEnumerable<IntroInfo>> GetIntros(BaseItem item, User user)
+        public Task<IEnumerable<IntroInfo>> GetPrerolls(BaseItem item, User user)
         {
             var introManager = new IntroManager();
             return Task.FromResult(introManager.Get());
         }
 
-        public IEnumerable<string> GetAllIntroFiles()
+        public IEnumerable<string> GetAllPrerollFiles()
         {
             // not implemented on server
             return Enumerable.Empty<string>();

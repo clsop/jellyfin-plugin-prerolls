@@ -1,7 +1,7 @@
 using System;
 using MediaBrowser.Model.Plugins;
 
-namespace Jellyfin.Plugin.Intros.Configuration
+namespace Jellyfin.Plugin.Prerolls.Configuration
 {
     public class PluginConfiguration : BasePluginConfiguration
     {
@@ -9,7 +9,7 @@ namespace Jellyfin.Plugin.Intros.Configuration
 
         public string Vimeo { get; set; } = string.Empty;
 
-        public int Intro { get; set; } = Plugin.DefaultIntro;
+        public int Preroll { get; set; } = Plugin.DefaultPreroll;
 
         public int Resolution { get; set; } = Plugin.DefaultResolution;
 

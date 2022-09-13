@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Jellyfin.Plugin.Intros
+namespace Jellyfin.Plugin.Prerolls
 {
     public class VimeoConfig
     {
