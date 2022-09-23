@@ -65,11 +65,11 @@ namespace Jellyfin.Plugin.Prerolls
             // only relevant on first installation
             if (Plugin.Instance.Configuration.Id == Guid.Empty)
             {
-                Cache(Plugin.DefaultIntro);
+                Cache(Plugin.DefaultPreroll);
             }
 
-            var path = Intro(Plugin.Instance.Configuration.Preroll, Plugin.Instance.Configuration.Resolution);
-            var selection = Plugin.Instance.Configuration.Intro;
+            var path = Preroll(Plugin.Instance.Configuration.Preroll, Plugin.Instance.Configuration.Resolution);
+            var selection = Plugin.Instance.Configuration.Preroll;
 
             if (Plugin.Instance.Configuration.Local != string.Empty)
             {
@@ -81,13 +81,12 @@ namespace Jellyfin.Plugin.Prerolls
 
                 int.TryParse(options[_random.Next(options.Length)], out selection);
 
-                path = Intro(selection, Plugin.Instance.Configuration.Resolution);
+                path = Preroll(selection, Plugin.Instance.Configuration.Resolution);
             }
             else if (Plugin.Instance.Configuration.Random)
             {
-                selection = _intros[_random.Next(_intros.Length)];
-
-                path = Intro(selection, Plugin.Instance.Configuration.Resolution);
+                selection = _prerolls[_random.Next(_prerolls.Length)];
+                path = Preroll(selection, Plugin.Instance.Configuration.Resolution);
             }
 
             if (!File.Exists(path))
@@ -180,10 +179,10 @@ namespace Jellyfin.Plugin.Prerolls
             }
 
             using var client = new WebClient();
-            client.DownloadFile(selection.url, Intro(intro, selection.height));
+            client.DownloadFile(selection.url, Preroll(intro, selection.height));
 
             // should probably do this from the get method
-            UpdateLibrary(config.video.title, Intro(intro, selection.height));
+            UpdateLibrary(config.video.title, Preroll(intro, selection.height));
         }
 
         private HttpWebRequest CreateRequest(string url)

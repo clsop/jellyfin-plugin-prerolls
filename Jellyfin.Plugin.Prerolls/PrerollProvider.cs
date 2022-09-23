@@ -11,10 +11,9 @@ namespace Jellyfin.Plugin.Prerolls
     {
         public string Name { get; } = "Prerolls";
 
-        public Task<IEnumerable<IntroInfo>> GetPrerolls(BaseItem item, User user)
+        public Task<IEnumerable<IntroInfo>> GetIntros(BaseItem item, User user)
         {
-            var introManager = new IntroManager();
-            return Task.FromResult(introManager.Get());
+            return Task.FromResult(new PrerollManager().Get());
         }
 
         public IEnumerable<string> GetAllPrerollFiles()
