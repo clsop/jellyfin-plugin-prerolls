@@ -1,6 +1,6 @@
 {
-    "jellyfinDir": "",
-    "jellyfinWebDir": "",
-    "jellyfinDataDir": "",
+    "jellyfinDir": "${workspaceFolder}/jellyfin/jellyfin/Jellyfin.Server",
+    "jellyfinWebDir": "${workspaceFolder}/jellyfin/jellyfin-web",
+    "jellyfinDataDir": "${workspaceFolder}/jellyfin",
     "pluginName" : "Jellyfin.Plugin.Prerolls"
 }

@@ -7,3 +7,6 @@ artifacts
 .idea
 .vs
 .vscode
+
+# jellyfin
+jellyfin
