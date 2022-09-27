@@ -13,7 +13,11 @@ namespace Jellyfin.Plugin.Prerolls.Configuration
 
         public int Resolution { get; set; } = Plugin.DefaultResolution;
 
+        public string[] Genres { get; set; } = Plugin.DefaultGenres;
+
         public bool Random { get; set; } = false;
+
+        public bool UseGenres { get; set; } = false;
 
         // used internally to track the current intro
         public Guid Id { get; set; }

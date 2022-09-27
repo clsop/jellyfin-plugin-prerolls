@@ -58,7 +58,7 @@ namespace Jellyfin.Plugin.Prerolls
             445012069
         };
 
-        private readonly string _cache = Plugin.ApplicationPaths.CachePath + "/prerolls/";
+        private readonly string _cachePath = Plugin.ApplicationPaths.CachePath + "/prerolls/";
 
         public IEnumerable<IntroInfo> Get()
         {
@@ -147,9 +147,9 @@ namespace Jellyfin.Plugin.Prerolls
             var config = JsonSerializer.Deserialize<VimeoConfig>(configData);
 
             // directory not present on first installation
-            if (!Directory.Exists(_cache))
+            if (!Directory.Exists(_cachePath))
             {
-                Directory.CreateDirectory(_cache);
+                Directory.CreateDirectory(_cachePath);
             }
 
             var minimum = 100000;
@@ -173,11 +173,12 @@ namespace Jellyfin.Plugin.Prerolls
             }
 
             // remove old files for now
-            foreach (var file in Directory.EnumerateFiles(_cache))
+            foreach (var file in Directory.EnumerateFiles(_cachePath))
             {
                 File.Delete(file);
             }
 
+            // TODO: use HttpClient
             using var client = new WebClient();
             client.DownloadFile(selection.url, Preroll(intro, selection.height));
 
@@ -187,6 +188,7 @@ namespace Jellyfin.Plugin.Prerolls
 
         private HttpWebRequest CreateRequest(string url)
         {
+            // TODO: use HttpClient
             var request = (HttpWebRequest) WebRequest.Create(url);
 
             request.CookieContainer = _cookieContainer;
@@ -257,7 +259,7 @@ namespace Jellyfin.Plugin.Prerolls
 
         private string Preroll(int preroll, int resolution)
         {
-            return _cache + preroll + "-" + resolution + ".mp4";
+            return _cachePath + preroll + "-" + resolution + ".mp4";
         }
     }
 }
