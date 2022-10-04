@@ -5,18 +5,20 @@
         {
         // A chain task - build the plugin, then copy it to your
         // jellyfin server's plugin directory
-        "label": "build-and-copy",
+        "label": "build",
         "dependsOrder": "sequence",
-        "dependsOn": ["build", "make-plugin-dir", "copy-dll"]
+        "dependsOn": ["make-plugin-dir", "publish"]
         },
         {
         // Build the plugin
-        "label": "build",
+        "label": "publish",
         "command": "dotnet",
         "type": "shell",
         "args": [
             "publish",
             "${workspaceFolder}/${config:pluginName}.sln",
+            "-o",
+            "${workspaceFolder}/dist/${config:pluginName}",
             "/property:GenerateFullPaths=true",
             "/consoleloggerparameters:NoSummary"
         ],
@@ -33,22 +35,25 @@
             "command": "mkdir",
             "args": [
             "-p",
-            "${config:jellyfinDataDir}/plugins/${config:pluginName}/"
+            "${workspaceFolder}/dist/${config:pluginName}/"
             ]
         },
         {
-            // Copy the plugin dll to the jellyfin plugin install path
-            // This command copies every .dll from the build directory to the plugin dir
-            // Usually, you probablly only need ${config:pluginName}.dll
-            // But some plugins may bundle extra requirements
-            "label": "copy-dll",
-            "type": "shell",
-            "command": "cp",
-            "args": [
-            "./${config:pluginName}/bin/Debug/net6.0/publish/*",
-            "${config:jellyfinDataDir}/plugins/${config:pluginName}/"
-            ]
-
-        },
+            "label": "run-container",
+            "type": "docker-run",
+            "dependsOn": "build",
+            "dockerRun": {
+                "remove": true,
+                "image": "jellyfin/jellyfin",
+                "ports": [{
+                    "containerPort": 8096,
+                    "hostPort": 8096
+                }],
+                "volumes": [{
+                    "localPath": "${workspaceFolder}/dist/",
+                    "containerPath": "/config/plugins"
+                }]
+            }
+        }
     ]
 }

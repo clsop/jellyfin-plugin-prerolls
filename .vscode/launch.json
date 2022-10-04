@@ -2,17 +2,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "coreclr",
-            "name": "Launch",
+            "type": "docker",
+            "name": "Debug",
             "request": "launch",
-            "preLaunchTask": "build-and-copy",
-            "program": "${config:jellyfinDir}/bin/Debug/net6.0/jellyfin.dll",
-            "args": [
-            //"--nowebclient",
-            "--webdir",
-            "${config:jellyfinWebDir}/dist/"
-            ],
-            "cwd": "${config:jellyfinDir}",
+            "preLaunchTask": "run-container",
+            "platform": "netCore",
+            "dockerServerReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+http://\\S",
+                "uriFormat": "http://localhost:8086",
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/Jellyfin.Plugin.Prerolls/Jellyfin.Plugin.Prerolls.csproj",
+                "program": "${workspaceFolder}/dist/${config:pluginName}/${config:pluginName}.dll"
+            }
         }
     ]
 }

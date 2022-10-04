@@ -117,7 +117,7 @@
                         </select>
                     </div>
                     <div class="selectContainer">
-                        <label for="resolution">Resolution</label>
+                        <label for="resolution">Vimeo Resolution</label>
                         <select is="emby-select" id="resolution">
                             <option value="240">240p</option>
                             <option value="360">360p</option>
@@ -131,9 +131,21 @@
                     <div class="checkboxContainer checkboxContainer-withDescription">
                         <label class="emby-checkbox-label">
                             <input id="random" type="checkbox" is="emby-checkbox" />
-                            <span>Randomize Preroll</span>
+                            <span>Randomize Prerolls</span>
                         </label>
                     </div>
+                    <div class="checkboxContainer checkboxContainer-withDescription">
+                        <label class="emby-checkbox-label">
+                            <input id="genres" type="checkbox" is="emby-checkbox" />
+                            <span>Preroll by genre</span>
+                        </label>
+                    </div>
+                    <div class="fieldDescription">Categories prerolls by genre with a random pick (requires local path).</div>
+                    <div id="genresCollapsible" class="editableListviewContainer" style="margin-top:3em">
+                        <h2 style="margin:.6em 0;vertical-align:middle;display:inline-block">Genres</h2>
+                        <button is="emby-button" type="button" class="fab btnAddTextItem submit emby-button" style="margin-left:1em" title="Add"><span class="material-icons add" aria-hidden="true"></span></button>
+
+                        <!-- <div class="paperList" id="listGenres"><div class="listItem"><span class="material-icons listItemIcon live_tv" aria-hidden="true" style="background-color:#333;"></span><div class="listItemBody"><div class="textValue">Hardstyle</div></div><button type="button" is="paper-icon-button-light" data-index="0" class="btnRemoveFromEditorList autoSize paper-icon-button-light"><span class="material-icons delete" aria-hidden="true"></span></button></div></div> </div> -->
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
                             <span>Save</span>
@@ -155,12 +167,14 @@
                     document.querySelector('#preroll').value = config.Preroll;
                     document.querySelector('#resolution').value = config.Resolution;
                     document.querySelector('#random').checked = config.Random;
+                    document.querySelector('#genres').checked = config.UseGenres;
 
                     if (config.Local) {
                         document.querySelector('#vimeo').disabled = true;
                         document.querySelector('#preroll').disabled = true;
                         document.querySelector('#resolution').disabled = true;
                         document.querySelector('#random').disabled = true;
+                        document.querySelector('#genres').disabled = false;
                     }
 
                     if (config.Vimeo) {
@@ -173,25 +187,39 @@
                         document.querySelector('#preroll').disabled = true;
                     }
 
-                    document.querySelector('#local').addEventListener('input', function () {
-                        if (this.value !== "") document.querySelector('#vimeo').value = "";
+                    if (config.UseGenres) {
+                        document.querySelector('#genresCollapsible').disabled = false;
+                    } else {
+                        document.querySelector('#genresCollapsible').disabled = true;
+                    }
 
-                        document.querySelector('#vimeo').disabled = this.value !== "";
-                        document.querySelector('#preroll').disabled = this.value !== "";
-                        document.querySelector('#resolution').disabled = this.value !== "";
-                        document.querySelector('#random').disabled = this.value !== "";
+                    document.querySelector('#local').addEventListener('input', function () {
+                        var disabled = this.value !== "";
+
+                        if (disabled) document.querySelector('#vimeo').value = "";
+                        
+                        document.querySelector('#vimeo').disabled = disabled;
+                        document.querySelector('#preroll').disabled = disabled;
+                        document.querySelector('#resolution').disabled = disabled;
+                        document.querySelector('#random').disabled = disabled;
                     });
 
                     document.querySelector('#vimeo').addEventListener('input', function () {
-                        if (this.value !== "") document.querySelector('#local').value = "";
+                        var disabled = this.value !== "";
 
-                        document.querySelector('#local').disabled = this.value !== "";
-                        document.querySelector('#preroll').disabled = this.value !== "";
-                        document.querySelector('#random').disabled = this.value !== "";
+                        if (disabled) document.querySelector('#local').value = "";
+
+                        document.querySelector('#local').disabled = disabled;
+                        document.querySelector('#preroll').disabled = disabled;
+                        document.querySelector('#random').disabled = disabled;
                     });
 
                     document.querySelector('#random').addEventListener('click', function () {
                         document.querySelector('#preroll').disabled = this.checked;
+                    });
+
+                    document.querySelector('#genres').addEventListener('click', function () {
+                        document.querySelector('#genresCollapsible').disabled = !this.checked;
                     });
 
                     Dashboard.hideLoadingMsg();
@@ -206,6 +234,7 @@
                     config.Preroll = document.querySelector('#preroll').value;
                     config.Resolution = document.querySelector('#resolution').value;
                     config.Random = document.querySelector('#random').checked;
+                    config.UseGenres = document.querySelector('#genres').checked;
 
                     ApiClient.updatePluginConfiguration(plugin.guid, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);
