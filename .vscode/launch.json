@@ -1,21 +1,39 @@
 {
     "version": "0.2.0",
     "configurations": [
+        // {
+        //     "type": "docker",
+        //     "name": "Launch",
+        //     "request": "launch",
+        //     "preLaunchTask": "run-container",
+        //     "netCore": {
+        //         "appProject": "${workspaceFolder}/${config:pluginName}/${config:pluginName}.csproj"
+        //     }
+        // },
+        // {
+        //     "name": ".NET Core Docker Attach",
+        //     "type": "coreclr",
+        //     "request": "attach",
+        //     "processId": "${command:pickRemoteProcess}",
+        //     "pipeTransport": {
+        //         "pipeProgram": "docker",
+        //         "pipeArgs": [ "exec", "-i", "jellyfinpluginprerolls-dev" ],
+        //         "debuggerPath": "/remote_debugger/vsdbg",
+        //         "pipeCwd": "${workspaceRoot}",
+        //         "quoteArgs": false
+        //     }
+        // }
         {
-            "type": "docker",
-            "name": "Debug",
+            "type": "coreclr",
+            "name": "Launch",
             "request": "launch",
-            "preLaunchTask": "run-container",
-            "platform": "netCore",
-            "dockerServerReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+http://\\S",
-                "uriFormat": "http://localhost:8086",
-            },
-            "netCore": {
-                "appProject": "${workspaceFolder}/Jellyfin.Plugin.Prerolls/Jellyfin.Plugin.Prerolls.csproj",
-                "program": "${workspaceFolder}/dist/${config:pluginName}/${config:pluginName}.dll"
-            }
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/jellyfin/jellyfin/Jellyfin.Server/bin/Debug/net6.0/jellyfin.dll",
+            "args": [
+                "--webdir",
+                "${workspaceFolder}/jellyfin/web/dist"
+            ],
+            "cwd": "${workspaceFolder}/jellyfin/jellyfin/Jellyfin.Server"
         }
     ]
 }
