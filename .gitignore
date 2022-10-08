@@ -9,4 +9,4 @@ artifacts
 .vscode
 
 # jellyfin
-dist
+dist/

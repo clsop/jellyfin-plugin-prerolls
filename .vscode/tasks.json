@@ -7,7 +7,7 @@
             // jellyfin server's plugin directory
             "label": "build",
             "dependsOrder": "sequence",
-            "dependsOn": ["server-build", "web-build", "make-plugin-dir", "publish"]
+            "dependsOn": ["make-plugin-dir", "publish"]
         },
         {
             // Build the plugin
@@ -18,7 +18,7 @@
                 "publish",
                 "${workspaceFolder}/${config:pluginName}.sln",
                 "-o",
-                "${workspaceFolder}/dist/${config:pluginName}",
+                "${workspaceFolder}/dist/plugins/${config:pluginName}",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -49,11 +49,14 @@
             // Build jellyfin web client
             "label": "client-build",
             "command": "${workspaceFolder}/jellyfin/web/build.sh",
+            "options": {
+                "cwd": "${workspaceFolder}/jellyfin/web"
+            },
             "type": "shell",
             "args": [
-                "-b",
-                "native",
                 "-t",
+                "native",
+                "-p",
                 "portable"
             ],
             "group": "build",
@@ -69,7 +72,7 @@
             "command": "mkdir",
             "args": [
             "-p",
-            "${workspaceFolder}/dist/${config:pluginName}/"
+            "${workspaceFolder}/dist/plugins/${config:pluginName}/"
             ]
         }
     ]

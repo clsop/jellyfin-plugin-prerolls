@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 
@@ -12,9 +12,9 @@ namespace Jellyfin.Plugin.Prerolls
 {
     public class PrerollManager
     {
-        private readonly CookieContainer _cookieContainer = new CookieContainer();
-
-        private readonly Random _random = new Random();
+        private readonly CookieContainer _CookieContainer;
+        private readonly Random _Random;
+        // private readonly HttpClient _HttpClient;
 
         private readonly int[] _prerolls = {
             459725398,
@@ -60,15 +60,22 @@ namespace Jellyfin.Plugin.Prerolls
 
         private readonly string _cachePath = Plugin.ApplicationPaths.CachePath + "/prerolls/";
 
-        public IEnumerable<IntroInfo> Get()
+        public PrerollManager()
+        {
+            _Random = new Random();
+            _CookieContainer = new CookieContainer();
+            // _HttpClient = new HttpClient();
+        }
+
+        public async Task<IEnumerable<IntroInfo>> Get()
         {
             // only relevant on first installation
-            if (Plugin.Instance.Configuration.Id == Guid.Empty)
-            {
-                Cache(Plugin.DefaultPreroll);
-            }
+            // if (Plugin.Instance.Configuration.Id == Guid.Empty)
+            // {
+            //     Cache(Plugin.DefaultPreroll);
+            // }
 
-            var path = Preroll(Plugin.Instance.Configuration.Preroll, Plugin.Instance.Configuration.Resolution);
+            var path = GetPrerollPath(Plugin.Instance.Configuration.Preroll, Plugin.Instance.Configuration.Resolution);
             var selection = Plugin.Instance.Configuration.Preroll;
 
             if (Plugin.Instance.Configuration.Local != string.Empty)
@@ -79,26 +86,29 @@ namespace Jellyfin.Plugin.Prerolls
             {
                 var options = Plugin.Instance.Configuration.Vimeo.Split(',');
 
-                int.TryParse(options[_random.Next(options.Length)], out selection);
+                int.TryParse(options[_Random.Next(options.Length)], out selection);
 
-                path = Preroll(selection, Plugin.Instance.Configuration.Resolution);
+                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
             }
             else if (Plugin.Instance.Configuration.Random)
             {
-                selection = _prerolls[_random.Next(_prerolls.Length)];
-                path = Preroll(selection, Plugin.Instance.Configuration.Resolution);
+                selection = _prerolls[_Random.Next(_prerolls.Length)];
+                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
             }
 
-            if (!File.Exists(path))
-            {
-                Cache(selection != 0 ? selection : 375468729);
-            }
+            // if (!File.Exists(path))
+            // {
+            //     Cache(selection != 0 ? selection : 375468729);
+            // }
 
             // grab the ID again since it might have changed
-            yield return new IntroInfo
+            return new List<IntroInfo>()
             {
-                ItemId = Plugin.Instance.Configuration.Id,
-                Path = path
+                new IntroInfo()
+                {
+                    ItemId = Plugin.Instance.Configuration.Id,
+                    Path = path
+                }
             };
         }
 
@@ -116,9 +126,9 @@ namespace Jellyfin.Plugin.Prerolls
                 options.Add(path);
             }
 
-            var selection = options[_random.Next(options.Count)];
+            var selection = options[_Random.Next(options.Count)];
             UpdateLibrary(Path.GetFileName(selection), selection);
-            
+
             return selection;
         }
 
@@ -180,18 +190,18 @@ namespace Jellyfin.Plugin.Prerolls
 
             // TODO: use HttpClient
             using var client = new WebClient();
-            client.DownloadFile(selection.url, Preroll(intro, selection.height));
+            client.DownloadFile(selection.url, GetPrerollPath(intro, selection.height));
 
             // should probably do this from the get method
-            UpdateLibrary(config.video.title, Preroll(intro, selection.height));
+            UpdateLibrary(config.video.title, GetPrerollPath(intro, selection.height));
         }
 
         private HttpWebRequest CreateRequest(string url)
         {
             // TODO: use HttpClient
-            var request = (HttpWebRequest) WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
 
-            request.CookieContainer = _cookieContainer;
+            request.CookieContainer = _CookieContainer;
             request.AllowAutoRedirect = false;
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36";
             request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
@@ -206,10 +216,10 @@ namespace Jellyfin.Plugin.Prerolls
 
         private HttpWebResponse GetResponse(HttpWebRequest request)
         {
-            var response = (HttpWebResponse) request.GetResponse();
+            var response = (HttpWebResponse)request.GetResponse();
 
             // store the cookies for subsequent requests
-            _cookieContainer.Add(response.Cookies);
+            _CookieContainer.Add(response.Cookies);
 
             return response;
         }
@@ -257,7 +267,7 @@ namespace Jellyfin.Plugin.Prerolls
             Plugin.LibraryManager.CreateItem(video, null);
         }
 
-        private string Preroll(int preroll, int resolution)
+        private string GetPrerollPath(int preroll, int resolution)
         {
             return _cachePath + preroll + "-" + resolution + ".mp4";
         }

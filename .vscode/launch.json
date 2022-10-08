@@ -9,7 +9,9 @@
             "program": "${workspaceFolder}/jellyfin/jellyfin/Jellyfin.Server/bin/Debug/net6.0/jellyfin.dll",
             "args": [
                 "--webdir",
-                "${workspaceFolder}/jellyfin/web/dist"
+                "${workspaceFolder}/jellyfin/web/jellyfin-web_10.8.5",
+                "--datadir",
+                "${workspaceFolder}/dist"
             ],
             "cwd": "${workspaceFolder}/jellyfin/jellyfin/Jellyfin.Server"
         }

@@ -13,7 +13,7 @@ namespace Jellyfin.Plugin.Prerolls.Configuration
 
         public int Resolution { get; set; } = Plugin.DefaultResolution;
 
-        public string[] Genres { get; set; } = Plugin.DefaultGenres;
+        public string[] Genres { get; set; }
 
         public bool Random { get; set; } = false;
 

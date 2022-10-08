@@ -19,10 +19,12 @@ namespace Jellyfin.Plugin.Prerolls
             _Manager = new PrerollManager();
         }
 
-        public Task<IEnumerable<IntroInfo>> GetIntros(BaseItem item, User user)
+        public async Task<IEnumerable<IntroInfo>> GetIntros(BaseItem item, User user)
         {
             // TODO: randomize intro based on genre
-            return Task.FromResult(_Manager.Get());
+            var itemGenres = item.Genres.ToList();
+            var intros = _Manager.Get();
+            return await intros;
         }
 
         public IEnumerable<string> GetAllPrerollFiles()
