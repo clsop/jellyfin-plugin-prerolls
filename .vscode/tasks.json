@@ -3,15 +3,18 @@
     "version": "2.0.0",
     "tasks": [
         {
-            // A chain task - build the plugin, then copy it to your
-            // jellyfin server's plugin directory
-            "label": "build",
+            "label": "release",
             "dependsOrder": "sequence",
-            "dependsOn": ["make-plugin-dir", "publish"]
+            "dependsOn": ["make-plugin-dir", "publish debug"]
+        },
+        {
+            "label": "debug",
+            "dependsOrder": "sequence",
+            "dependsOn": ["make-plugin-dir", "publish debug"]
         },
         {
             // Build the plugin
-            "label": "publish",
+            "label": "publish debug",
             "command": "dotnet",
             "type": "shell",
             "args": [
@@ -21,6 +24,39 @@
                 "${workspaceFolder}/dist/plugins/${config:pluginName}",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build release",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "${workspaceFolder}/${config:pluginName}.sln",
+                "--configuration",
+                "release"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "compress release",
+            "command": "zip",
+            "type": "process",
+            "args": [
+                // TODO: version
+                "jellyfin-plugin-prerolls-${version}.zip",
+                "${workspaceFolder}/${config:pluginName}/bin/Release/net6.0/*.dll",
+                "--configuration",
+                "release"
             ],
             "group": "build",
             "presentation": {

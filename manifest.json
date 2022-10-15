@@ -8,10 +8,10 @@
     "category": "Other",
     "versions": [
       {
-        "version": "1.4.1.1",
+        "version": "1.4.1.2",
         "changelog": "- Initial Release\n- Preroll by genre",
         "targetAbi": "10.8.0.0",
-        "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.1.1/jellyfin-plugin-prerolls-v1.4.1.1.zip",
+        "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.1.2/jellyfin-plugin-prerolls-v1.4.1.2.zip",
         "checksum": "689cf1b5a9f8adb1a31750da16623996",
         "timestamp": "2021-06-02T00:00:00Z"
       }
