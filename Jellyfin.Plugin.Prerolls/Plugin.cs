@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using Jellyfin.Plugin.Prerolls.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
@@ -20,7 +20,7 @@ namespace Jellyfin.Plugin.Prerolls
         public const int DefaultPreroll = 443404335;
 
         public const int DefaultResolution = 1080;
-        public readonly string[] DefaultGenres = { "Action", "Horror", "Comedy", "Drama", "Sci-Fi" };
+        //public readonly string[] DefaultGenres = { "Action", "Horror", "Comedy", "Drama", "Sci-Fi" };
 
         public static Plugin Instance { get; private set; }
 
@@ -35,7 +35,15 @@ namespace Jellyfin.Plugin.Prerolls
 
             ApplicationPaths = applicationPaths;
             LibraryManager = libraryManager;
-            Instance.Configuration.Genres = itemRepo.GetGenreNames().ToArray();
+
+            if (Instance.Configuration.Genres.Count == 0)
+            {
+                Instance.Configuration.Genres = itemRepo.GetGenreNames().Select(genre => new GenreConfig()
+                {
+                    Name = genre,
+                    LocalSource = null
+                }).ToList();
+            }
         }
 
         public IEnumerable<PluginPageInfo> GetPages()

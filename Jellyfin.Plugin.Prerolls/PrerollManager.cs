@@ -1,5 +1,8 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Net;
 using System.Text.Json;
@@ -67,7 +70,12 @@ namespace Jellyfin.Plugin.Prerolls
             // _HttpClient = new HttpClient();
         }
 
-        public async Task<IEnumerable<IntroInfo>> Get()
+        private T GetRandom<T>(IList<T> collection)
+        {
+            return collection.ElementAt(_Random.Next(collection.Count));
+        }
+
+        public async Task<IEnumerable<IntroInfo>> Get(List<GenreConfig>? genreConfigs = null)
         {
             // only relevant on first installation
             // if (Plugin.Instance.Configuration.Id == Guid.Empty)
@@ -78,28 +86,32 @@ namespace Jellyfin.Plugin.Prerolls
             var path = GetPrerollPath(Plugin.Instance.Configuration.Preroll, Plugin.Instance.Configuration.Resolution);
             var selection = Plugin.Instance.Configuration.Preroll;
 
-            if (Plugin.Instance.Configuration.Local != string.Empty)
+            if (genreConfigs != null)
+            {
+                var genreConfig = GetRandom(genreConfigs);
+                path = Local(genreConfig.LocalSource);
+            }
+            else if (Plugin.Instance.Configuration.Local != string.Empty)
             {
                 path = Local(Plugin.Instance.Configuration.Local);
             }
             else if (Plugin.Instance.Configuration.Vimeo != string.Empty)
             {
                 var options = Plugin.Instance.Configuration.Vimeo.Split(',');
-
-                int.TryParse(options[_Random.Next(options.Length)], out selection);
+                int.TryParse(GetRandom(options), out selection);
 
                 path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
             }
             else if (Plugin.Instance.Configuration.Random)
             {
-                selection = _prerolls[_Random.Next(_prerolls.Length)];
+                selection = GetRandom(_prerolls);
                 path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
             }
 
-            // if (!File.Exists(path))
-            // {
-            //     Cache(selection != 0 ? selection : 375468729);
-            // }
+            if (!File.Exists(path))
+            {
+                Cache(selection != 0 ? selection : 375468729);
+            }
 
             // grab the ID again since it might have changed
             return new List<IntroInfo>()

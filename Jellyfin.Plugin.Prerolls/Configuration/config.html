@@ -1,250 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     <title>Prerolls</title>
-</head>
-<body>
-    <div id="configPage" data-role="page" class="page type-interior pluginPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
-        <div data-role="content">
-            <div class="content-primary">
-                <form id="configForm">
-                    <p>Only videos from <a is="emby-linkbutton" class="button-link emby-button" target="_blank" href="https://prerolls.video">prerolls.video</a> are used, and the files themselves are pulled from Vimeo directly.</p>
-                    <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="local">Local Source</label>
-                        <input id="local" is="emby-input" placeholder="/var/cache/jellyfin" />
-                        <div class="fieldDescription">Add a file or directory to use files instead of remote videos. Items in a directory will be randomized.</div>
-                    </div>
-                    <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="vimeo">Vimeo IDs</label>
-                        <input id="vimeo" is="emby-input" placeholder="375468729,35292474" />
-                        <div class="fieldDescription">Use custom videos instead of the predefined list below. Multiple videos can be added by separating them with commas.</div>
-                    </div>
-                    <div class="selectContainer">
-                        <label for="preroll">Preroll</label>
-                        <select is="emby-select" id="preroll">
-                            <option value="459725398">80's Lambo</option>
-                            <option value="440978154">Alamo Drafthouse Don't Talk</option>
-                            <option value="440793415">Alamo Drafthouse No Talking</option>
-                            <option value="440978850">Alamo Drafthouse Shush</option>
-                            <option value="462141918">AMC Theaters Don't Ruin the Movie</option>
-                            <option value="442118203">Anti-Piracy</option>
-                            <option value="456990827">Apocalypse</option>
-                            <option value="442744420">Audio Waveform</option>
-                            <option value="459723868">Back to the Future</option>
-                            <option value="464974136">Bloody Horror</option>
-                            <option value="464989433">Blood Splatter</option>
-                            <option value="443076423">Blue Smoke</option>
-                            <option value="443381251">Blue Smoke Whirl</option>
-                            <option value="484072189">Christmas Card</option>
-                            <option value="483691239">Christmas Ornaments</option>
-                            <option value="483129067">Christmas Train</option>
-                            <option value="483129129">Christmas Tree</option>
-                            <option value="442179153">Cinematic Explosion</option>
-                            <option value="443404430">Classic Black</option>
-                            <option value="443082153">Color Wheel</option>
-                            <option value="443076524">Colorful Lights</option>
-                            <option value="443076432">Colorful Particles</option>
-                            <option value="443081703">Colorful Swirls</option>
-                            <option value="443076518">Colorful Transformation</option>
-                            <option value="441615803">COVID-19 Social Distancing</option>
-                            <option value="443076406">COVID-19 Stay the Fuck Home</option>
-                            <option value="443076410">COVID-19 Stay the Heck Home</option>
-                            <option value="443081835">Cyberpunk Loading</option>
-                            <option value="443081756">Cyberpunk</option>
-                            <option value="443404417">Dark Matter</option>
-                            <option value="443081683">Demolition</option>
-                            <option value="443076427">Digital Glitch</option>
-                            <option value="443404395">Discowave</option>
-                            <option value="443081932">Dubstep</option>
-                            <option value="440785270">DVD Coming Soon</option>
-                            <option value="440791181">DVD Feature Presentation</option>
-                            <option value="443125346">Elegant Short</option>
-                            <option value="443076495">Energy Glitch</option>
-                            <option value="445012069">Fallout</option>
-                            <option value="443082249">Fire Explosion</option>
-                            <option value="465047881">Garage Screams</option>
-                            <option value="443381171">Glitch Freeloader</option>
-                            <option value="443381220">Glitch</option>
-                            <option value="465120319">Halloween Spider</option>
-                            <option value="464496810">Happy Halloween</option>
-                            <option value="482322121">Holiday Sweater</option>
-                            <option value="465061336">Horror Movies Intro</option>
-                            <option value="465017117">Horror Movies Trailer</option>
-                            <option value="482286608">JellyHub</option>
-                            <option value="443381155">Liquid Glitch</option>
-                            <option value="482679433">Magic Christmas Tree</option>
-                            <option value="443081704">Magical Smoke Reveal</option>
-                            <option value="482298222">Merry Christmas</option>
-                            <option value="443380983">Modern</option>
-                            <option value="465018157">Monster</option>
-                            <option value="443404335">Neon Blue</option>
-                            <option value="443076479">Neon Particles</option>
-                            <option value="443404299">Neon Rain</option>
-                            <option value="443381025">Neon Reflection</option>
-                            <option value="443081757">Neon Shock</option>
-                            <option value="443380999">Neon Sign Reflection</option>
-                            <option value="443404077">Neon Storm</option>
-                            <option value="463022111">Netflix Originals</option>
-                            <option value="442981865">Netflix Style</option>
-                            <option value="449256975">Netflix Theater</option>
-                            <option value="443404049">Network Glitch</option>
-                            <option value="443510978">No More!</option>
-                            <option value="448034833">Not Netflix</option>
-                            <option value="444952001">Old Film Reel</option>
-                            <option value="443081763">Paint Splash</option>
-                            <option value="459658222">Piracy. It's a crime.</option>
-                            <option value="443404007">Plasma</option>
-                            <option value="443076414">Ribbon</option>
-                            <option value="465473327">Scary Dark Hotel</option>
-                            <option value="443403981">Sci-Fi</option>
-                            <option value="443082063">Smoke Spiral</option>
-                            <option value="483716521">Snow Globe</option>
-                            <option value="484071435">Snowflakes</option>
-                            <option value="483181060">Snowman</option>
-                            <option value="465031184">Spooky Halloween</option>
-                            <option value="443403947">Star Trails</option>
-                            <option value="443132003">Summer Vibes</option>
-                            <option value="443082060">TV Intro</option>
-                            <option value="485178920">Universal Studios</option>
-                            <option value="465002705">Vampire Bats Halloween</option>
-                            <option value="443081913">Water Droplets</option>
-                            <option value="443076389">Water Splash</option>
-                            <option value="482670089">Winter is Coming</option>
-                            <option value="483691215">Winter Ice</option>
-                            <option value="443076530">X Logo</option>
-                            <option value="464967809">Zombieland</option>
-                        </select>
-                    </div>
-                    <div class="selectContainer">
-                        <label for="resolution">Vimeo Resolution</label>
-                        <select is="emby-select" id="resolution">
-                            <option value="240">240p</option>
-                            <option value="360">360p</option>
-                            <option value="480">480p</option>
-                            <option value="720">720p</option>
-                            <option value="1080">1080p</option>
-                            <option value="2160">2K</option>
-                            <option value="4320">4K</option>
-                        </select>
-                    </div>
-                    <div class="checkboxContainer checkboxContainer-withDescription">
-                        <label class="emby-checkbox-label">
-                            <input id="random" type="checkbox" is="emby-checkbox" />
-                            <span>Randomize Prerolls</span>
-                        </label>
-                    </div>
-                    <div class="checkboxContainer checkboxContainer-withDescription">
-                        <label class="emby-checkbox-label">
-                            <input id="genres" type="checkbox" is="emby-checkbox" />
-                            <span>Preroll by genre</span>
-                        </label>
-                    </div>
-                    <div class="fieldDescription">Categories prerolls by genre with a random pick (requires local path).</div>
-                    <div id="genresCollapsible" class="editableListviewContainer" style="margin-top:3em">
-                        <h2 style="margin:.6em 0;vertical-align:middle;display:inline-block">Genres</h2>
-                        <button is="emby-button" type="button" class="fab btnAddTextItem submit emby-button" style="margin-left:1em" title="Add"><span class="material-icons add" aria-hidden="true"></span></button>
-
-                        <!-- <div class="paperList" id="listGenres"><div class="listItem"><span class="material-icons listItemIcon live_tv" aria-hidden="true" style="background-color:#333;"></span><div class="listItemBody"><div class="textValue">Hardstyle</div></div><button type="button" is="paper-icon-button-light" data-index="0" class="btnRemoveFromEditorList autoSize paper-icon-button-light"><span class="material-icons delete" aria-hidden="true"></span></button></div></div> </div> -->
-                    <div>
-                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
-                            <span>Save</span>
-                        </button>
-                    </div>
-                </form>
+  </head>
+  <body>
+    <div
+      id="configPage"
+      data-role="page"
+      class="page type-interior pluginPage"
+      data-require="emby-input,emby-button,emby-select,emby-checkbox"
+    >
+      <div data-role="content">
+        <div class="content-primary">
+          <form id="configForm">
+            <p>
+              Only videos from
+              <a
+                is="emby-linkbutton"
+                class="button-link emby-button"
+                target="_blank"
+                href="https://prerolls.video"
+                >prerolls.video</a
+              >
+              are used, and the files themselves are pulled from Vimeo directly.
+            </p>
+            <div class="inputContainer">
+              <label class="inputLabel" for="local">Local Source</label>
+              <input
+                id="local"
+                is="emby-input"
+                placeholder="/var/cache/jellyfin"
+              />
+              <div class="fieldDescription">
+                Add a file or directory to use files instead of remote videos.
+                Items in a directory will be randomized.
+              </div>
             </div>
+            <div class="inputContainer">
+              <label class="inputLabel" for="vimeo">Vimeo IDs</label>
+              <input
+                id="vimeo"
+                is="emby-input"
+                placeholder="375468729,35292474"
+              />
+              <div class="fieldDescription">
+                Use custom videos instead of the predefined list below. Multiple
+                videos can be added by separating them with commas.
+              </div>
+            </div>
+            <div class="selectContainer">
+              <label for="preroll">Preroll</label>
+              <select is="emby-select" id="preroll">
+                <option value="459725398">80's Lambo</option>
+                <option value="440978154">Alamo Drafthouse Don't Talk</option>
+                <option value="440793415">Alamo Drafthouse No Talking</option>
+                <option value="440978850">Alamo Drafthouse Shush</option>
+                <option value="462141918">
+                  AMC Theaters Don't Ruin the Movie
+                </option>
+                <option value="442118203">Anti-Piracy</option>
+                <option value="456990827">Apocalypse</option>
+                <option value="442744420">Audio Waveform</option>
+                <option value="459723868">Back to the Future</option>
+                <option value="464974136">Bloody Horror</option>
+                <option value="464989433">Blood Splatter</option>
+                <option value="443076423">Blue Smoke</option>
+                <option value="443381251">Blue Smoke Whirl</option>
+                <option value="484072189">Christmas Card</option>
+                <option value="483691239">Christmas Ornaments</option>
+                <option value="483129067">Christmas Train</option>
+                <option value="483129129">Christmas Tree</option>
+                <option value="442179153">Cinematic Explosion</option>
+                <option value="443404430">Classic Black</option>
+                <option value="443082153">Color Wheel</option>
+                <option value="443076524">Colorful Lights</option>
+                <option value="443076432">Colorful Particles</option>
+                <option value="443081703">Colorful Swirls</option>
+                <option value="443076518">Colorful Transformation</option>
+                <option value="441615803">COVID-19 Social Distancing</option>
+                <option value="443076406">COVID-19 Stay the Fuck Home</option>
+                <option value="443076410">COVID-19 Stay the Heck Home</option>
+                <option value="443081835">Cyberpunk Loading</option>
+                <option value="443081756">Cyberpunk</option>
+                <option value="443404417">Dark Matter</option>
+                <option value="443081683">Demolition</option>
+                <option value="443076427">Digital Glitch</option>
+                <option value="443404395">Discowave</option>
+                <option value="443081932">Dubstep</option>
+                <option value="440785270">DVD Coming Soon</option>
+                <option value="440791181">DVD Feature Presentation</option>
+                <option value="443125346">Elegant Short</option>
+                <option value="443076495">Energy Glitch</option>
+                <option value="445012069">Fallout</option>
+                <option value="443082249">Fire Explosion</option>
+                <option value="465047881">Garage Screams</option>
+                <option value="443381171">Glitch Freeloader</option>
+                <option value="443381220">Glitch</option>
+                <option value="465120319">Halloween Spider</option>
+                <option value="464496810">Happy Halloween</option>
+                <option value="482322121">Holiday Sweater</option>
+                <option value="465061336">Horror Movies Intro</option>
+                <option value="465017117">Horror Movies Trailer</option>
+                <option value="482286608">JellyHub</option>
+                <option value="443381155">Liquid Glitch</option>
+                <option value="482679433">Magic Christmas Tree</option>
+                <option value="443081704">Magical Smoke Reveal</option>
+                <option value="482298222">Merry Christmas</option>
+                <option value="443380983">Modern</option>
+                <option value="465018157">Monster</option>
+                <option value="443404335">Neon Blue</option>
+                <option value="443076479">Neon Particles</option>
+                <option value="443404299">Neon Rain</option>
+                <option value="443381025">Neon Reflection</option>
+                <option value="443081757">Neon Shock</option>
+                <option value="443380999">Neon Sign Reflection</option>
+                <option value="443404077">Neon Storm</option>
+                <option value="463022111">Netflix Originals</option>
+                <option value="442981865">Netflix Style</option>
+                <option value="449256975">Netflix Theater</option>
+                <option value="443404049">Network Glitch</option>
+                <option value="443510978">No More!</option>
+                <option value="448034833">Not Netflix</option>
+                <option value="444952001">Old Film Reel</option>
+                <option value="443081763">Paint Splash</option>
+                <option value="459658222">Piracy. It's a crime.</option>
+                <option value="443404007">Plasma</option>
+                <option value="443076414">Ribbon</option>
+                <option value="465473327">Scary Dark Hotel</option>
+                <option value="443403981">Sci-Fi</option>
+                <option value="443082063">Smoke Spiral</option>
+                <option value="483716521">Snow Globe</option>
+                <option value="484071435">Snowflakes</option>
+                <option value="483181060">Snowman</option>
+                <option value="465031184">Spooky Halloween</option>
+                <option value="443403947">Star Trails</option>
+                <option value="443132003">Summer Vibes</option>
+                <option value="443082060">TV Intro</option>
+                <option value="485178920">Universal Studios</option>
+                <option value="465002705">Vampire Bats Halloween</option>
+                <option value="443081913">Water Droplets</option>
+                <option value="443076389">Water Splash</option>
+                <option value="482670089">Winter is Coming</option>
+                <option value="483691215">Winter Ice</option>
+                <option value="443076530">X Logo</option>
+                <option value="464967809">Zombieland</option>
+              </select>
+            </div>
+            <div class="selectContainer">
+              <label for="resolution">Vimeo Resolution</label>
+              <select is="emby-select" id="resolution">
+                <option value="240">240p</option>
+                <option value="360">360p</option>
+                <option value="480">480p</option>
+                <option value="720">720p</option>
+                <option value="1080">1080p</option>
+                <option value="2160">2K</option>
+                <option value="4320">4K</option>
+              </select>
+            </div>
+            <div class="checkboxContainer checkboxContainer-withDescription">
+              <label class="emby-checkbox-label">
+                <input id="random" type="checkbox" is="emby-checkbox" />
+                <span>Randomize Prerolls</span>
+              </label>
+            </div>
+            <div class="checkboxContainer checkboxContainer-withDescription">
+              <label class="emby-checkbox-label">
+                <input id="useGenres" type="checkbox" is="emby-checkbox" />
+                <span>Preroll by genre</span>
+              </label>
+              <div class="fieldDescription">
+                Categorize prerolls by genre with a random pick (requires local
+                path).
+              </div>
+            </div>
+            <div id="genres"></div>
+            <button
+              is="emby-button"
+              type="submit"
+              class="raised button-submit block emby-button"
+            >
+              <span>Save</span>
+            </button>
+          </form>
         </div>
-        <script type="text/javascript">
-            var plugin = {
-                guid: '40ebce45-fe78-4e84-b819-3a9f537da73c'
-            };
+      </div>
+      <script type="text/javascript">
+        var plugin = {
+          guid: "40ebce45-fe78-4e84-b819-3a9f537da73c",
+        };
 
-            document.querySelector('#configPage').addEventListener('pageshow', function () {
-                Dashboard.showLoadingMsg();
-                ApiClient.getPluginConfiguration(plugin.guid).then(function (config) {
-                    document.querySelector('#local').value = config.Local;
-                    document.querySelector('#vimeo').value = config.Vimeo;
-                    document.querySelector('#preroll').value = config.Preroll;
-                    document.querySelector('#resolution').value = config.Resolution;
-                    document.querySelector('#random').checked = config.Random;
-                    document.querySelector('#genres').checked = config.UseGenres;
+        function generateGenreHtml(genreConfig) {
+          var name = genreConfig.Name.toLowerCase();
+          var inputId = name + "Path";
 
-                    if (config.Local) {
-                        document.querySelector('#vimeo').disabled = true;
-                        document.querySelector('#preroll').disabled = true;
-                        document.querySelector('#resolution').disabled = true;
-                        document.querySelector('#random').disabled = true;
-                        document.querySelector('#genres').disabled = false;
-                    }
+          var genreCollapsible = document.createElement("div");
+          genreCollapsible.id = name + "Block";
+          genreCollapsible.className = "editableListviewContainer";
+          genreCollapsible.style = "margin-top: 3em";
 
-                    if (config.Vimeo) {
-                        document.querySelector('#local').disabled = true;
-                        document.querySelector('#preroll').disabled = true;
-                        document.querySelector('#random').disabled = true;
-                    }
+          var genreTitle = document.createElement("h2");
+          genreTitle.style =
+            "margin: .6em 0; vertical-align: middle; display: inline-block";
+          genreTitle.textContent = genreConfig.Name;
 
-                    if (config.Random) {
-                        document.querySelector('#preroll').disabled = true;
-                    }
+          var inputContainer = document.createElement("div");
+          inputContainer.className = "inputContainer";
 
-                    if (config.UseGenres) {
-                        document.querySelector('#genresCollapsible').disabled = false;
-                    } else {
-                        document.querySelector('#genresCollapsible').disabled = true;
-                    }
+          var inputLabel = document.createElement("label");
+          inputLabel.setAttribute("for", inputId);
+          inputLabel.className = "inputLabel";
+          inputLabel.textContent = "Local Source";
 
-                    document.querySelector('#local').addEventListener('input', function () {
-                        var disabled = this.value !== "";
+          var input = document.createElement("input");
+          input.setAttribute("is", "emby-input");
+          input.placeholder = "set local path for prerolls with this genre";
+          input.id = inputId;
+          input.value = genreConfig.LocalSource ? genreConfig.LocalSource : null;
 
-                        if (disabled) document.querySelector('#vimeo').value = "";
-                        
-                        document.querySelector('#vimeo').disabled = disabled;
-                        document.querySelector('#preroll').disabled = disabled;
-                        document.querySelector('#resolution').disabled = disabled;
-                        document.querySelector('#random').disabled = disabled;
-                    });
+          inputContainer.appendChild(inputLabel);
+          inputContainer.appendChild(input);
+          genreCollapsible.appendChild(genreTitle);
+          genreCollapsible.appendChild(inputContainer);
 
-                    document.querySelector('#vimeo').addEventListener('input', function () {
-                        var disabled = this.value !== "";
+          return genreCollapsible;
+        }
 
-                        if (disabled) document.querySelector('#local').value = "";
+        document
+          .querySelector("#configPage")
+          .addEventListener("pageshow", function () {
+            Dashboard.showLoadingMsg();
 
-                        document.querySelector('#local').disabled = disabled;
-                        document.querySelector('#preroll').disabled = disabled;
-                        document.querySelector('#random').disabled = disabled;
-                    });
+            ApiClient.getPluginConfiguration(plugin.guid).then(function (
+              config
+            ) {
+              function addGenres(element, genres) {
+                for (var genreConfig of config.Genres) {
+                  var genreElement = generateGenreHtml(genreConfig);
+                  element.appendChild(genreElement);
+                }
+              }
 
-                    document.querySelector('#random').addEventListener('click', function () {
-                        document.querySelector('#preroll').disabled = this.checked;
-                    });
+              document.querySelector("#local").value = config.Local;
+              document.querySelector("#vimeo").value = config.Vimeo;
+              document.querySelector("#preroll").value = config.Preroll;
+              document.querySelector("#resolution").value = config.Resolution;
+              document.querySelector("#random").checked = config.Random;
+              document.querySelector("#useGenres").checked = config.UseGenres;
 
-                    document.querySelector('#genres').addEventListener('click', function () {
-                        document.querySelector('#genresCollapsible').disabled = !this.checked;
-                    });
+              if (config.Local) {
+                document.querySelector("#vimeo").disabled = true;
+                document.querySelector("#preroll").disabled = true;
+                document.querySelector("#resolution").disabled = true;
+                document.querySelector("#random").disabled = true;
+                document.querySelector("#useGenres").disabled = false;
+              }
 
-                    Dashboard.hideLoadingMsg();
+              if (config.Vimeo) {
+                document.querySelector("#local").disabled = true;
+                document.querySelector("#preroll").disabled = true;
+                document.querySelector("#random").disabled = true;
+              }
+
+              if (config.Random) {
+                document.querySelector("#preroll").disabled = true;
+              }
+
+              if (config.UseGenres) {
+                addGenres(document.querySelector("#genres"), config.Genres);
+              }
+
+              document
+                .querySelector("#local")
+                .addEventListener("input", function () {
+                  var disabled = this.value !== "";
+
+                  if (disabled) document.querySelector("#vimeo").value = "";
+
+                  document.querySelector("#vimeo").disabled = disabled;
+                  document.querySelector("#preroll").disabled = disabled;
+                  document.querySelector("#resolution").disabled = disabled;
+                  document.querySelector("#random").disabled = disabled;
                 });
+
+              document
+                .querySelector("#vimeo")
+                .addEventListener("input", function () {
+                  var disabled = this.value !== "";
+
+                  if (disabled) document.querySelector("#local").value = "";
+
+                  document.querySelector("#local").disabled = disabled;
+                  document.querySelector("#preroll").disabled = disabled;
+                  document.querySelector("#random").disabled = disabled;
+                });
+
+              document
+                .querySelector("#random")
+                .addEventListener("click", function () {
+                  document.querySelector("#preroll").disabled = this.checked;
+                });
+
+              document
+                .querySelector("#useGenres")
+                .addEventListener("click", function () {
+                  var genresElement = document.querySelector("#genres");
+                  var disableOthers = this.checked;
+
+                  if (disableOthers) {
+                    addGenres(genresElement, config.Genres);
+
+                    document.querySelector("#local").disabled = disableOthers;
+                    document.querySelector("#vimeo").disabled = disableOthers;
+                    document.querySelector("#preroll").disabled = disableOthers;
+                    document.querySelector("#resolution").disabled =
+                      disableOthers;
+                    document.querySelector("#random").disabled = disableOthers;
+                  } else {
+                    genresElement.innerHTML = null;
+                    document.querySelector("#local").disabled = disableOthers;
+                    document.querySelector("#vimeo").disabled = disableOthers;
+                    document.querySelector("#preroll").disabled = disableOthers;
+                    document.querySelector("#resolution").disabled =
+                      disableOthers;
+                    document.querySelector("#random").disabled = disableOthers;
+                  }
+                });
+
+              Dashboard.hideLoadingMsg();
+            });
+          });
+
+        document
+          .querySelector("#configForm")
+          .addEventListener("submit", function (event) {
+            Dashboard.showLoadingMsg();
+            ApiClient.getPluginConfiguration(plugin.guid).then(function (
+              config
+            ) {
+              config.Local = document.querySelector("#local").value;
+              config.Vimeo = document.querySelector("#vimeo").value;
+              config.Preroll = document.querySelector("#preroll").value;
+              config.Resolution = document.querySelector("#resolution").value;
+              config.Random = document.querySelector("#random").checked;
+              config.UseGenres = document.querySelector("#useGenres").checked;
+
+              if (config.UseGenres) {
+                for (var genreConfig of config.Genres) {
+                  var genrePathInput = document.querySelector(
+                    "#" + genreConfig.Name.toLowerCase() + "Path"
+                  );
+                  genreConfig.LocalSource = genrePathInput ? genrePathInput.value : null;
+                }
+              }
+
+              console.log(config);
+              ApiClient.updatePluginConfiguration(plugin.guid, config).then(
+                function (result) {
+                  Dashboard.processPluginConfigurationUpdateResult(result);
+                }
+              );
             });
 
-            document.querySelector('#configForm').addEventListener('submit', function (event) {
-                Dashboard.showLoadingMsg();
-                ApiClient.getPluginConfiguration(plugin.guid).then(function (config) {
-                    config.Local = document.querySelector('#local').value;
-                    config.Vimeo = document.querySelector('#vimeo').value;
-                    config.Preroll = document.querySelector('#preroll').value;
-                    config.Resolution = document.querySelector('#resolution').value;
-                    config.Random = document.querySelector('#random').checked;
-                    config.UseGenres = document.querySelector('#genres').checked;
-
-                    ApiClient.updatePluginConfiguration(plugin.guid, config).then(function (result) {
-                        Dashboard.processPluginConfigurationUpdateResult(result);
-                    });
-                });
-
-                event.preventDefault();
-                return false;
-            });
-        </script>
+            event.preventDefault();
+            return false;
+          });
+      </script>
     </div>
-</body>
+  </body>
 </html>
