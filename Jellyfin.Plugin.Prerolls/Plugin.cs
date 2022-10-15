@@ -36,7 +36,7 @@ namespace Jellyfin.Plugin.Prerolls
             ApplicationPaths = applicationPaths;
             LibraryManager = libraryManager;
 
-            if (Instance.Configuration.Genres.Count == 0)
+            if (Instance.Configuration.Genres == null || Instance.Configuration.Genres.Count == 0)
             {
                 Instance.Configuration.Genres = itemRepo.GetGenreNames().Select(genre => new GenreConfig()
                 {
