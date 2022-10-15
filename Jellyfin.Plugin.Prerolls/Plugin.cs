@@ -4,6 +4,7 @@ using System.Linq;
 using Jellyfin.Plugin.Prerolls.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
+using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Persistence;
 using MediaBrowser.Model.Plugins;
@@ -20,7 +21,6 @@ namespace Jellyfin.Plugin.Prerolls
         public const int DefaultPreroll = 443404335;
 
         public const int DefaultResolution = 1080;
-        //public readonly string[] DefaultGenres = { "Action", "Horror", "Comedy", "Drama", "Sci-Fi" };
 
         public static Plugin Instance { get; private set; }
 
@@ -36,9 +36,21 @@ namespace Jellyfin.Plugin.Prerolls
             ApplicationPaths = applicationPaths;
             LibraryManager = libraryManager;
 
-            if (Instance.Configuration.Genres.Count == 0)
+            if (Instance.Configuration.Genres == null || Instance.Configuration.Genres.Count == 0)
             {
-                Instance.Configuration.Genres = itemRepo.GetGenreNames().Select(genre => new GenreConfig()
+                var movieGeneres = itemRepo.GetGenres(new InternalItemsQuery()
+                {
+                    IsMovie = true
+                }).Items.Select(item => item.Item.Name);
+                var serieGeneres = itemRepo.GetGenres(new InternalItemsQuery()
+                {
+                    IsSeries = true
+                }).Items.Select(item => item.Item.Name);
+
+                var commonGenres = movieGeneres.Intersect(serieGeneres);
+                var allGenres = commonGenres.Concat(movieGeneres.Except(commonGenres)).Concat(serieGeneres.Except(commonGenres));
+
+                Instance.Configuration.Genres = allGenres.Select(genre => new GenreConfig()
                 {
                     Name = genre,
                     LocalSource = null
