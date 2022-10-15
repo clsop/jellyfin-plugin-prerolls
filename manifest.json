@@ -1,17 +1,17 @@
 [
   {
-    "guid": "9482dc3b-48aa-4d3b-8224-9128d1e8e0cd",
-    "name": "Intros",
-    "overview": "Display flashy intros before movies and other videos",
+    "guid": "40ebce45-fe78-4e84-b819-3a9f537da73c",
+    "name": "Prerolls",
+    "overview": "Display flashy prerolls before movies and other videos",
     "description": "Select a flashy video from prerolls.video to run before any video content.",
-    "owner": "dkanada",
+    "owner": "clsop",
     "category": "Other",
     "versions": [
       {
-        "version": "1.3.1.0",
-        "changelog": "- update build process and migrate to github for hosting",
-        "targetAbi": "10.6.0.0",
-        "sourceUrl": "https://github.com/dkanada/jellyfin-plugin-intros/releases/download/v1.3.1/jellyfin-plugin-intros-v1.3.1.zip",
+        "version": "1.4.1.1",
+        "changelog": "- Initial Release\n- Preroll by genre",
+        "targetAbi": "10.8.0.0",
+        "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.1.1/jellyfin-plugin-prerolls-v1.4.1.1.zip",
         "checksum": "689cf1b5a9f8adb1a31750da16623996",
         "timestamp": "2021-06-02T00:00:00Z"
       }

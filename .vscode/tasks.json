@@ -1,0 +1,79 @@
+{
+    // Paths and plugin name are configured in settings.json
+    "version": "2.0.0",
+    "tasks": [
+        {
+            // A chain task - build the plugin, then copy it to your
+            // jellyfin server's plugin directory
+            "label": "build",
+            "dependsOrder": "sequence",
+            "dependsOn": ["make-plugin-dir", "publish"]
+        },
+        {
+            // Build the plugin
+            "label": "publish",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "publish",
+                "${workspaceFolder}/${config:pluginName}.sln",
+                "-o",
+                "${workspaceFolder}/dist/plugins/${config:pluginName}",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            // Build jellyfin server
+            "label": "server-build",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "${workspaceFolder}/jellyfin/jellyfin/Jellyfin.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            // Build jellyfin web client
+            "label": "client-build",
+            "command": "${workspaceFolder}/jellyfin/web/build.sh",
+            "options": {
+                "cwd": "${workspaceFolder}/jellyfin/web"
+            },
+            "type": "shell",
+            "args": [
+                "-t",
+                "native",
+                "-p",
+                "portable"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            // Ensure the plugin directory exists before trying to use it
+            "label": "make-plugin-dir",
+            "type": "shell",
+            "command": "mkdir",
+            "args": [
+            "-p",
+            "${workspaceFolder}/dist/plugins/${config:pluginName}/"
+            ]
+        }
+    ]
+}

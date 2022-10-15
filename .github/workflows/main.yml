@@ -14,17 +14,17 @@ jobs:
     - name: Runtime
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
     - name: Dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration release
     - name: Move
-      run: mv Jellyfin.Plugin.Intros/bin/*/*/Jellyfin.Plugin.Intros.dll .
+      run: mv Jellyfin.Plugin.Prerolls/bin/*/*/Jellyfin.Plugin.Prerolls.dll .
     - name: Compress
       env:
         version: ${{ steps.variables.outputs.version }}
-      run: zip jellyfin-plugin-intros-${version}.zip *.dll
+      run: zip jellyfin-plugin-prerolls-${version}.zip *.dll
     - name: Publish
       if: startsWith(github.ref, 'refs/tags')
       uses: ncipollo/release-action@v1

@@ -1,7 +1,12 @@
 # build
 bin
 obj
+artifacts
 
 # ide
 .idea
 .vs
+.vscode
+
+# jellyfin
+dist/

@@ -1,22 +1,25 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.IO;
 using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 
-namespace Jellyfin.Plugin.Intros
+namespace Jellyfin.Plugin.Prerolls
 {
-    public class IntroManager
+    public class PrerollManager
     {
-        private readonly CookieContainer _cookieContainer = new CookieContainer();
+        private readonly CookieContainer _CookieContainer;
+        private readonly Random _Random;
+        // private readonly HttpClient _HttpClient;
 
-        private readonly Random _random = new Random();
-
-        private readonly int[] _intros = {
+        private readonly int[] _prerolls = {
             459725398,
             440978154,
             440793415,
@@ -58,38 +61,51 @@ namespace Jellyfin.Plugin.Intros
             445012069
         };
 
-        private readonly string _cache = Plugin.ApplicationPaths.CachePath + "/intros/";
+        private readonly string _cachePath = Plugin.ApplicationPaths.CachePath + "/prerolls/";
 
-        public IEnumerable<IntroInfo> Get()
+        public PrerollManager()
+        {
+            _Random = new Random();
+            _CookieContainer = new CookieContainer();
+            // _HttpClient = new HttpClient();
+        }
+
+        private T GetRandom<T>(IList<T> collection)
+        {
+            return collection.ElementAt(_Random.Next(collection.Count));
+        }
+
+        public async Task<IEnumerable<IntroInfo>> Get(List<GenreConfig>? genreConfigs = null)
         {
             // only relevant on first installation
-            if (Plugin.Instance.Configuration.Id == Guid.Empty)
+            // if (Plugin.Instance.Configuration.Id == Guid.Empty)
+            // {
+            //     Cache(Plugin.DefaultPreroll);
+            // }
+
+            var path = GetPrerollPath(Plugin.Instance.Configuration.Preroll, Plugin.Instance.Configuration.Resolution);
+            var selection = Plugin.Instance.Configuration.Preroll;
+
+            if (genreConfigs != null)
             {
-                Cache(Plugin.DefaultIntro);
+                var genreConfig = GetRandom(genreConfigs);
+                path = Local(genreConfig.LocalSource);
             }
-
-            var path = Intro(Plugin.Instance.Configuration.Intro, Plugin.Instance.Configuration.Resolution);
-            var selection = Plugin.Instance.Configuration.Intro;
-
-            if (Plugin.Instance.Configuration.Local != string.Empty)
+            else if (Plugin.Instance.Configuration.Local != string.Empty)
             {
-                Local(Plugin.Instance.Configuration.Local);
-
-                path = Plugin.Instance.Configuration.Local;
+                path = Local(Plugin.Instance.Configuration.Local);
             }
             else if (Plugin.Instance.Configuration.Vimeo != string.Empty)
             {
                 var options = Plugin.Instance.Configuration.Vimeo.Split(',');
+                int.TryParse(GetRandom(options), out selection);
 
-                int.TryParse(options[_random.Next(options.Length)], out selection);
-
-                path = Intro(selection, Plugin.Instance.Configuration.Resolution);
+                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
             }
             else if (Plugin.Instance.Configuration.Random)
             {
-                selection = _intros[_random.Next(_intros.Length)];
-
-                path = Intro(selection, Plugin.Instance.Configuration.Resolution);
+                selection = GetRandom(_prerolls);
+                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
             }
 
             if (!File.Exists(path))
@@ -98,28 +114,34 @@ namespace Jellyfin.Plugin.Intros
             }
 
             // grab the ID again since it might have changed
-            yield return new IntroInfo
+            return new List<IntroInfo>()
             {
-                ItemId = Plugin.Instance.Configuration.Id,
-                Path = path
+                new IntroInfo()
+                {
+                    ItemId = Plugin.Instance.Configuration.Id,
+                    Path = path
+                }
             };
         }
 
-        private void Local(string path)
+        private string Local(string path)
         {
             var options = new List<string>();
             var location = File.GetAttributes(path);
+
             if (location.HasFlag(FileAttributes.Directory))
             {
-                options.AddRange(Directory.EnumerateFiles(path).ToList());
+                options.AddRange(Directory.EnumerateFiles(path));
             }
             else
             {
                 options.Add(path);
             }
 
-            var selection = options[_random.Next(options.Count)];
+            var selection = options[_Random.Next(options.Count)];
             UpdateLibrary(Path.GetFileName(selection), selection);
+
+            return selection;
         }
 
         private void Cache(int intro)
@@ -147,9 +169,9 @@ namespace Jellyfin.Plugin.Intros
             var config = JsonSerializer.Deserialize<VimeoConfig>(configData);
 
             // directory not present on first installation
-            if (!Directory.Exists(_cache))
+            if (!Directory.Exists(_cachePath))
             {
-                Directory.CreateDirectory(_cache);
+                Directory.CreateDirectory(_cachePath);
             }
 
             var minimum = 100000;
@@ -173,23 +195,25 @@ namespace Jellyfin.Plugin.Intros
             }
 
             // remove old files for now
-            foreach (var file in Directory.EnumerateFiles(_cache))
+            foreach (var file in Directory.EnumerateFiles(_cachePath))
             {
                 File.Delete(file);
             }
 
+            // TODO: use HttpClient
             using var client = new WebClient();
-            client.DownloadFile(selection.url, Intro(intro, selection.height));
+            client.DownloadFile(selection.url, GetPrerollPath(intro, selection.height));
 
             // should probably do this from the get method
-            UpdateLibrary(config.video.title, Intro(intro, selection.height));
+            UpdateLibrary(config.video.title, GetPrerollPath(intro, selection.height));
         }
 
         private HttpWebRequest CreateRequest(string url)
         {
-            var request = (HttpWebRequest) WebRequest.Create(url);
+            // TODO: use HttpClient
+            var request = (HttpWebRequest)WebRequest.Create(url);
 
-            request.CookieContainer = _cookieContainer;
+            request.CookieContainer = _CookieContainer;
             request.AllowAutoRedirect = false;
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36";
             request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
@@ -204,10 +228,10 @@ namespace Jellyfin.Plugin.Intros
 
         private HttpWebResponse GetResponse(HttpWebRequest request)
         {
-            var response = (HttpWebResponse) request.GetResponse();
+            var response = (HttpWebResponse)request.GetResponse();
 
             // store the cookies for subsequent requests
-            _cookieContainer.Add(response.Cookies);
+            _CookieContainer.Add(response.Cookies);
 
             return response;
         }
@@ -255,9 +279,9 @@ namespace Jellyfin.Plugin.Intros
             Plugin.LibraryManager.CreateItem(video, null);
         }
 
-        private string Intro(int intro, int resolution)
+        private string GetPrerollPath(int preroll, int resolution)
         {
-            return _cache + intro + "-" + resolution + ".mp4";
+            return _cachePath + preroll + "-" + resolution + ".mp4";
         }
     }
 }
