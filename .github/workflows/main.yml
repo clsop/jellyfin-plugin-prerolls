@@ -1,7 +1,7 @@
 name: release
 on: push
 jobs:
-  main:
+  release:
     runs-on: ubuntu-latest
     steps:
     - name: Repository
@@ -33,3 +33,4 @@ jobs:
         tag: ${{ steps.variables.outputs.version }}
         commit: ${{ github.sha }}
         token: ${{ github.token }}
+        body: - Initial Release\n- Preroll by genre
