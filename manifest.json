@@ -19,7 +19,7 @@
         "changelog": "- Initial Release\n- Preroll by genre",
         "targetAbi": "10.8.0.0",
         "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.1.2/jellyfin-plugin-prerolls-v1.4.1.2.zip",
-        "checksum": "4675aa342c9a76988ad922f46175bda1",
+        "checksum": "8c1b30ff6f1ac9530a4b4dd5f44109de",
         "timestamp": "2022-10-26T15:06:00Z"
       }
     ]
