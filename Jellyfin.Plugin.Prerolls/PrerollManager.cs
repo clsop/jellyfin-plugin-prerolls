@@ -159,10 +159,12 @@ namespace Jellyfin.Plugin.Prerolls
 
             // this should be a json file containing stream information
             if (match.Groups.Count != 2) return;
+            
             var configRequest = CreateRequest(match.Groups[1].Value.Replace(@"\", string.Empty));
 
             using var configResponse = GetResponse(configRequest);
             responseStream = configResponse.GetResponseStream();
+
             if (responseStream == null) return;
 
             var configData = new StreamReader(responseStream).ReadToEnd();
@@ -176,6 +178,7 @@ namespace Jellyfin.Plugin.Prerolls
 
             var minimum = 100000;
             var selection = config.request.files.progressive[0];
+
             foreach (var stream in config.request.files.progressive)
             {
                 if (stream.height == Plugin.Instance.Configuration.Resolution)
