@@ -16,7 +16,7 @@
         "timestamp": "2022-10-15T14:45:00Z"
       }, {
         "version": "1.4.1.2",
-        "changelog": "- Preroll by genre with local sources",
+        "changelog": "- Preroll by genre with local sources\n - Only movies and series genres are collected",
         "targetAbi": "10.8.0.0",
         "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.1.2/jellyfin-plugin-prerolls-v1.4.1.2.zip",
         "checksum": "9e47780f0898d0beb41236dcbc86ded2",

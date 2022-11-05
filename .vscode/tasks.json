@@ -5,7 +5,7 @@
         {
             "label": "release",
             "dependsOrder": "sequence",
-            "dependsOn": ["make-plugin-dir", "publish debug"]
+            "dependsOn": ["make-plugin-dir", "build release"]
         },
         {
             "label": "debug",

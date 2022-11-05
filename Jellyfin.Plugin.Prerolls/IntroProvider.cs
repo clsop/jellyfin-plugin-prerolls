@@ -9,14 +9,14 @@ using MediaBrowser.Controller.Library;
 
 namespace Jellyfin.Plugin.Prerolls
 {
-    public class PrerollProvider : IIntroProvider
+    public class IntroProvider : IIntroProvider
     {
         private static PrerollManager _Manager;
         private PluginConfiguration _Configuration;
 
         public string Name { get; } = "Prerolls";
 
-        public PrerollProvider()
+        public IntroProvider()
         {
             _Manager = new PrerollManager();
             _Configuration = Plugin.Instance.Configuration;

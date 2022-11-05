@@ -33,7 +33,7 @@ namespace Jellyfin.Plugin.Prerolls
         {
             Instance = this;
 
-            ApplicationPaths = applicationPaths;
+            ApplicationPaths = applicationPaths; 
             LibraryManager = libraryManager;
 
             if (Instance.Configuration.Genres == null || Instance.Configuration.Genres.Count == 0)
