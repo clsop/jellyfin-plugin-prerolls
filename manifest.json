@@ -9,17 +9,17 @@
     "versions": [
       {
         "version": "1.4.1.1",
-        "changelog": "- Initial Release\n- Preroll by genre",
+        "changelog": "- Initial Release",
         "targetAbi": "10.8.0.0",
         "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.1.1/jellyfin-plugin-prerolls-v1.4.1.1.zip",
         "checksum": "8f79e8e5f9e47a3ea4abbf0c4fe13f99",
         "timestamp": "2022-10-15T14:45:00Z"
       }, {
         "version": "1.4.1.2",
-        "changelog": "- Initial Release\n- Preroll by genre",
+        "changelog": "- Preroll by genre with local sources",
         "targetAbi": "10.8.0.0",
         "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.1.2/jellyfin-plugin-prerolls-v1.4.1.2.zip",
-        "checksum": "8c1b30ff6f1ac9530a4b4dd5f44109de",
+        "checksum": "9e47780f0898d0beb41236dcbc86ded2",
         "timestamp": "2022-10-26T15:06:00Z"
       }
     ]

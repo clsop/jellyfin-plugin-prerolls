@@ -25,13 +25,18 @@ jobs:
       env:
         version: ${{ steps.variables.outputs.version }}
       run: zip jellyfin-plugin-prerolls-${version}.zip *.dll
+      # TODO: produce manifest.json
+    - name: Manifest
+      env:
+        version: ${{ steps.variables.outputs.version }}
+      run: zip jellyfin-plugin-prerolls-${version}.zip *.dll
     - name: Publish
       if: startsWith(github.ref, 'refs/tags')
       uses: ncipollo/release-action@v1
       with:
-        artifacts: '*.zip'
+        artifacts: '*.zip,manifest.json'
         artifactContentType: zip
         tag: ${{ steps.variables.outputs.version }}
         commit: ${{ github.sha }}
         token: ${{ github.token }}
-        body: '- Initial Release\n- Preroll by genre'
+        bodyFile: CHANGES
