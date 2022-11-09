@@ -1,4 +1,4 @@
-namespace Jellyfin.Plugin.Prerolls
+namespace Jellyfin.Plugin.Prerolls.Configuration
 {
     public class GenreConfig
     {
