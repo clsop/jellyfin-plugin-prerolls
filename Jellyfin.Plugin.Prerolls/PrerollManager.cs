@@ -10,11 +10,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
+using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.Prerolls
 {
     public class PrerollManager
     {
+        private readonly ILogger<PrerollManager> _Logger;
         private readonly CookieContainer _CookieContainer;
         private readonly Random _Random;
         // private readonly HttpClient _HttpClient;
@@ -61,10 +63,11 @@ namespace Jellyfin.Plugin.Prerolls
             445012069
         };
 
-        private readonly string _cachePath = Plugin.ApplicationPaths.CachePath + "/prerolls/";
+        private readonly string _cachePath = Plugin.Instance.ApplicationPaths.CachePath + "/prerolls/";
 
-        public PrerollManager()
+        public PrerollManager(ILogger<PrerollManager> logger)
         {
+            _Logger = logger;
             _Random = new Random();
             _CookieContainer = new CookieContainer();
             // _HttpClient = new HttpClient();
@@ -110,6 +113,7 @@ namespace Jellyfin.Plugin.Prerolls
 
             if (!File.Exists(path))
             {
+                _Logger.LogWarning($"Could not find the path for preroll: {path}! using default preroll");
                 Cache(selection != 0 ? selection : 375468729);
             }
 
@@ -139,7 +143,7 @@ namespace Jellyfin.Plugin.Prerolls
             }
 
             var selection = options[_Random.Next(options.Count)];
-            UpdateLibrary(Path.GetFileName(selection), selection);
+            //UpdateLibrary(Path.GetFileName(selection), selection);
 
             return selection;
         }
@@ -241,7 +245,7 @@ namespace Jellyfin.Plugin.Prerolls
 
         private void UpdateLibrary(string title, string path)
         {
-            var result = Plugin.LibraryManager.GetItemsResult(new InternalItemsQuery
+            var result = Plugin.Instance.LibraryManager.GetItemsResult(new InternalItemsQuery
             {
                 HasAnyProviderId = new Dictionary<string, string>
                 {
@@ -255,7 +259,7 @@ namespace Jellyfin.Plugin.Prerolls
             {
                 foreach (var item in result.Items)
                 {
-                    Plugin.LibraryManager.DeleteItem(item, new DeleteOptions());
+                    Plugin.Instance.LibraryManager.DeleteItem(item, new DeleteOptions());
                 }
             }
 
@@ -279,7 +283,7 @@ namespace Jellyfin.Plugin.Prerolls
 
             // insert the video into the database
             // no clue why this is required if a method doesn't exist on the interface
-            Plugin.LibraryManager.CreateItem(video, null);
+            Plugin.Instance.LibraryManager.CreateItem(video, null);
         }
 
         private string GetPrerollPath(int preroll, int resolution)
