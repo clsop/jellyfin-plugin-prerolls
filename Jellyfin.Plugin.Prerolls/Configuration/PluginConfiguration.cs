@@ -15,7 +15,7 @@ namespace Jellyfin.Plugin.Prerolls.Configuration
 
         public int Resolution { get; set; } = Plugin.DefaultResolution;
 
-        public List<GenreConfig> Genres { get; set; } = null;
+        public List<GenreConfig> Genres { get; set; } = new List<GenreConfig>();
 
         public bool Random { get; set; } = false;
 
