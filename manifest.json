@@ -12,8 +12,8 @@
         "changelog": "- More efficient video in db handling\n - Disable vimeo for now, until better api communication is implemented",
         "targetAbi": "10.8.0.0",
         "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.2/jellyfin-plugin-prerolls-v1.4.2.zip",
-        "checksum": "",
-        "timestamp": "2022-11-15T12:23:00Z"
+        "checksum": "529b52dfff7004eba5dc913dcade9aca",
+        "timestamp": "2022-11-15T15:12:00Z"
       },
       {
         "version": "1.4.1.2",
