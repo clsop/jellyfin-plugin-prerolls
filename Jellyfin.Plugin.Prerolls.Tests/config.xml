@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PluginConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Local />
+  <Vimeo />
+  <Preroll>443404335</Preroll>
+  <Resolution>1080</Resolution>
+  <Genres>
+    <GenreConfig>
+      <Name>Action</Name>
+      <LocalSource>/extra/misc/Coding_Projects/Csharp/jellyfin-plugin-prerolls/dist/prerolls/action</LocalSource>
+    </GenreConfig>
+    <GenreConfig>
+      <Name>Horror</Name>
+      <LocalSource>/extra/misc/Coding_Projects/Csharp/jellyfin-plugin-prerolls/dist/prerolls/horror</LocalSource>
+    </GenreConfig>
+  </Genres>
+  <Random>false</Random>
+  <UseGenres>true</UseGenres>
+  <Id>89e73085-2714-4fdc-87d6-750d33b896fa</Id>
+</PluginConfiguration>

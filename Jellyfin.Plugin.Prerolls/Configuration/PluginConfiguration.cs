@@ -20,8 +20,5 @@ namespace Jellyfin.Plugin.Prerolls.Configuration
         public bool Random { get; set; } = false;
 
         public bool UseGenres { get; set; } = false;
-
-        // used internally to track the current preroll
-        public Guid Id { get; set; }
     }
 }

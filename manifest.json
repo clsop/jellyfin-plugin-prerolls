@@ -8,6 +8,14 @@
     "category": "Other",
     "versions": [
       {
+        "version": "1.4.2",
+        "changelog": "- Tests added with moq framework\n - More efficient video in db handling\n - Disable vimeo for now, until better api communication is implemented",
+        "targetAbi": "10.8.0.0",
+        "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.2/jellyfin-plugin-prerolls-v1.4.2.zip",
+        "checksum": "",
+        "timestamp": "2022-11-15T12:23:00Z"
+      },
+      {
         "version": "1.4.1.2",
         "changelog": "- Preroll by genre with local sources\n - Only movies and series genres are collected\n - Genres are loaded on config page",
         "targetAbi": "10.8.0.0",

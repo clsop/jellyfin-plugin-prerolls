@@ -19,6 +19,7 @@ namespace Jellyfin.Plugin.Prerolls
 {
     public class PrerollManager
     {
+        private const string PROVIDER_ID = "prerolls.video";
         private readonly ILogger<PrerollManager> _Logger;
         private readonly CookieContainer _CookieContainer;
         private readonly Random _Random;
@@ -66,7 +67,7 @@ namespace Jellyfin.Plugin.Prerolls
             445012069
         };
 
-        private readonly string _cachePath = Plugin.Instance.ApplicationPaths.CachePath + "/prerolls/";
+        private readonly string _cachePath = $"{Plugin.Instance.ApplicationPaths.CachePath}/prerolls";
 
         public PrerollManager(ILogger<PrerollManager> logger)
         {
@@ -76,59 +77,31 @@ namespace Jellyfin.Plugin.Prerolls
             // _HttpClient = new HttpClient();
         }
 
+        private string GetPrerollPath(int preroll, int resolution) => $"{_cachePath}/{preroll}-{resolution}.mp4";
+
         private T GetRandom<T>(IList<T> collection)
         {
             return collection.ElementAt(_Random.Next(collection.Count));
         }
 
-        public async Task<IEnumerable<IntroInfo>> Get(List<GenreConfig>? genreConfigs = null)
+        private Guid createVideoEntity(string path, Dictionary<string, string> provider)
         {
-            // only relevant on first installation
-            // if (Plugin.Instance.Configuration.Id == Guid.Empty)
-            // {
-            //     Cache(Plugin.DefaultPreroll);
-            // }
-
-            var path = GetPrerollPath(Plugin.Instance.Configuration.Preroll, Plugin.Instance.Configuration.Resolution);
-            var selection = Plugin.Instance.Configuration.Preroll;
-
-            if (genreConfigs != null)
+            // generate a video entity
+            var videoGuid = Guid.NewGuid();
+            var video = new Video
             {
-                var genreConfig = GetRandom(genreConfigs);
-                path = Local(genreConfig.LocalSource);
-            }
-            else if (Plugin.Instance.Configuration.Local != string.Empty)
-            {
-                path = Local(Plugin.Instance.Configuration.Local);
-            }
-            else if (Plugin.Instance.Configuration.Vimeo != string.Empty)
-            {
-                var options = Plugin.Instance.Configuration.Vimeo.Split(',');
-                int.TryParse(GetRandom(options), out selection);
-
-                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
-            }
-            else if (Plugin.Instance.Configuration.Random)
-            {
-                selection = GetRandom(_prerolls);
-                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
-            }
-
-            if (!File.Exists(path))
-            {
-                _Logger.LogWarning($"Could not find the path for preroll: {path}! using default preroll");
-                Cache(selection != 0 ? selection : 375468729);
-            }
-
-            // grab the ID again since it might have changed
-            return new List<IntroInfo>()
-            {
-                new IntroInfo()
-                {
-                    ItemId = Plugin.Instance.Configuration.Id,
-                    Path = path
-                }
+                Id = videoGuid,
+                Path = path,
+                ProviderIds = provider,
+                Tags = new string[] { PROVIDER_ID },
+                Name = $"preroll-{videoGuid}",
+                IsVirtualItem = true // don't show as a newly added video
             };
+
+            // insert the video into the database
+            Plugin.Instance.LibraryManager.CreateItem(video, null);
+
+            return videoGuid;
         }
 
         private string Local(string path)
@@ -146,8 +119,6 @@ namespace Jellyfin.Plugin.Prerolls
             }
 
             var selection = options[_Random.Next(options.Count)];
-            //UpdateLibrary(Path.GetFileName(selection), selection);
-
             return selection;
         }
 
@@ -166,7 +137,7 @@ namespace Jellyfin.Plugin.Prerolls
 
             // this should be a json file containing stream information
             if (match.Groups.Count != 2) return;
-            
+
             var configRequest = CreateRequest(match.Groups[1].Value.Replace(@"\", string.Empty));
 
             using var configResponse = GetResponse(configRequest);
@@ -215,7 +186,7 @@ namespace Jellyfin.Plugin.Prerolls
             client.DownloadFile(selection.url, GetPrerollPath(intro, selection.height));
 
             // should probably do this from the get method
-            UpdateLibrary(config.video.title, GetPrerollPath(intro, selection.height));
+            //UpdateLibrary(config.video.title, GetPrerollPath(intro, selection.height));
         }
 
         private HttpWebRequest CreateRequest(string url)
@@ -246,52 +217,91 @@ namespace Jellyfin.Plugin.Prerolls
             return response;
         }
 
-        private void UpdateLibrary(string title, string path)
+        private Guid UpdateLibrary(string path)
         {
-            var result = Plugin.Instance.LibraryManager.GetItemsResult(new InternalItemsQuery
+            var fileName = Path.GetFileName(path);
+            var provider = new Dictionary<string, string>
             {
-                HasAnyProviderId = new Dictionary<string, string>
-                {
-                    {"prerolls.video", title}
-                }
+                { PROVIDER_ID, fileName }
+            };
+            var prerollItems = Plugin.Instance.LibraryManager.GetItemList(new InternalItemsQuery
+            {
+                HasAnyProviderId = provider
             });
 
-            // not working yet
-            // the query above returns no results
-            if (result.Items.Count > 0)
+            // if video is there (file path) just use it, instead of adding a new entry
+            if (prerollItems.Count > 0)
             {
-                foreach (var item in result.Items)
+                // ever only expect one video from provider
+                var video = prerollItems[0];
+
+                if (File.Exists(path))
                 {
-                    Plugin.Instance.LibraryManager.DeleteItem(item, new DeleteOptions());
+                    return video.Id;
+
                 }
+
+                _Logger.LogError($"File '{path}' for database preroll does not exist.");
+                Plugin.Instance.LibraryManager.DeleteItem(video, new DeleteOptions()
+                {
+                    DeleteFileLocation = false
+                });
             }
 
-            // generate a video entity and strip keywords
-            var video = new Video
-            {
-                Id = Guid.NewGuid(),
-                Path = path,
-                ProviderIds = new Dictionary<string, string>
-                {
-                    {"prerolls.video", title}
-                },
-                Name = title
-                    .Replace("jellyfin", string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                    .Replace("pre-roll", string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                    .Trim()
-            };
-
-            Plugin.Instance.Configuration.Id = video.Id;
-            Plugin.Instance.SaveConfiguration();
-
-            // insert the video into the database
-            // no clue why this is required if a method doesn't exist on the interface
-            Plugin.Instance.LibraryManager.CreateItem(video, null);
+            return createVideoEntity(path, provider);
         }
 
-        private string GetPrerollPath(int preroll, int resolution)
+        public async Task<IEnumerable<IntroInfo>> Get(List<GenreConfig>? genreConfigs = null)
         {
-            return _cachePath + preroll + "-" + resolution + ".mp4";
+            // only relevant on first installation
+            // if (Plugin.Instance.Configuration.Id == Guid.Empty)
+            // {
+            //     Cache(Plugin.DefaultPreroll);
+            // }
+
+            Guid itemId = Guid.Empty;
+            var path = GetPrerollPath(Plugin.Instance.Configuration.Preroll, Plugin.Instance.Configuration.Resolution);
+            var selection = Plugin.Instance.Configuration.Preroll;
+
+            if (genreConfigs != null)
+            {
+                var genreConfig = GetRandom(genreConfigs);
+                path = Local(genreConfig.LocalSource);
+            }
+            else if (Plugin.Instance.Configuration.Local != string.Empty)
+            {
+                path = Local(Plugin.Instance.Configuration.Local);
+            }
+            else if (Plugin.Instance.Configuration.Vimeo != string.Empty)
+            {
+                var options = Plugin.Instance.Configuration.Vimeo.Split(',');
+                int.TryParse(GetRandom(options), out selection);
+
+                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
+            }
+            else if (Plugin.Instance.Configuration.Random)
+            {
+                selection = GetRandom(_prerolls);
+                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
+            }
+
+            if (!File.Exists(path))
+            {
+                _Logger.LogWarning($"Could not find the path for preroll: {path}! using default preroll");
+                //Cache(selection != 0 ? selection : 375468729);
+            }
+
+            itemId = UpdateLibrary(path);
+
+            // grab the ID again since it might have changed
+            return new List<IntroInfo>()
+            {
+                new IntroInfo()
+                {
+                    ItemId = itemId,
+                    Path = path
+                }
+            };
         }
     }
 }

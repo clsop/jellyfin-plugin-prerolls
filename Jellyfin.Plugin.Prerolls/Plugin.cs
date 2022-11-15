@@ -38,6 +38,9 @@ namespace Jellyfin.Plugin.Prerolls
 
         public IEnumerable<PluginPageInfo> GetPages()
         {
+            // revalidate cached configuration
+            Plugin.Instance.SaveConfiguration(Plugin.Instance.Configuration);
+
             var movieGeneres = this.ItemRepository.GetGenres(new InternalItemsQuery()
             {
                 IsMovie = true
@@ -60,11 +63,6 @@ namespace Jellyfin.Plugin.Prerolls
             yield return new PluginPageInfo
             {
                 Name = Name,
-                EmbeddedResourcePath = GetType().Namespace + ".Configuration.config.html"
-            };
-            yield return new PluginPageInfo
-            {
-                Name = "Test",
                 EmbeddedResourcePath = GetType().Namespace + ".Configuration.config.html"
             };
         }
