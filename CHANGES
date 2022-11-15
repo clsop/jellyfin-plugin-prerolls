@@ -1,3 +1,2 @@
-- Tests added with moq framework
 - More efficient video in db handling
 - Disable vimeo for now, until better api communication is implemented

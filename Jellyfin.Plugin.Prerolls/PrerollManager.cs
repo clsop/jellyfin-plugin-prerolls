@@ -238,7 +238,6 @@ namespace Jellyfin.Plugin.Prerolls
                 if (File.Exists(path))
                 {
                     return video.Id;
-
                 }
 
                 _Logger.LogError($"File '{path}' for database preroll does not exist.");
