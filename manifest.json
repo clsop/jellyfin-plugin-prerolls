@@ -9,10 +9,10 @@
     "versions": [
       {
         "version": "1.4.2",
-        "changelog": "- More efficient video in db handling\n - Disable vimeo for now, until better api communication is implemented",
+        "changelog": "- More efficient video in db handling\n - Disable vimeo for now, until better api communication is implemented\n - Fixed config cached save\n - Unit tests added using Moq",
         "targetAbi": "10.8.0.0",
         "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/v1.4.2/jellyfin-plugin-prerolls-v1.4.2.zip",
-        "checksum": "529b52dfff7004eba5dc913dcade9aca",
+        "checksum": "",
         "timestamp": "2022-11-15T15:12:00Z"
       },
       {

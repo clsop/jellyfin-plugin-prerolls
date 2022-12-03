@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Jellyfin.Plugin.Prerolls</RootNamespace>
     <AssemblyVersion>1.4.2</AssemblyVersion>
     <FileVersion>1.4.2</FileVersion>

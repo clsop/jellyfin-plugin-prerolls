@@ -14,6 +14,7 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 
 using Jellyfin.Plugin.Prerolls.Configuration;
+using MediaBrowser.Controller.Persistence;
 
 namespace Jellyfin.Plugin.Prerolls
 {
@@ -79,10 +80,7 @@ namespace Jellyfin.Plugin.Prerolls
 
         private string GetPrerollPath(int preroll, int resolution) => $"{_cachePath}/{preroll}-{resolution}.mp4";
 
-        private T GetRandom<T>(IList<T> collection)
-        {
-            return collection.ElementAt(_Random.Next(collection.Count));
-        }
+        private T GetRandom<T>(IList<T> collection) => collection.ElementAt(_Random.Next(collection.Count));
 
         private Guid createVideoEntity(string path, Dictionary<string, string> provider)
         {
@@ -250,6 +248,36 @@ namespace Jellyfin.Plugin.Prerolls
             return createVideoEntity(path, provider);
         }
 
+        public void UpdateGenres(IItemRepository itemRepository)
+        {
+            var movieGeneres = itemRepository.GetGenres(new InternalItemsQuery()
+            {
+                IsMovie = true
+            }).Items.Select(item => item.Item.Name);
+            var serieGeneres = itemRepository.GetGenres(new InternalItemsQuery()
+            {
+                IsSeries = true
+            }).Items.Select(item => item.Item.Name);
+
+            // seperate old from new genres if any has been added to a library
+            var genres = Plugin.Instance.Configuration.Genres.Select(x => x.Name);
+            var commonGenres = movieGeneres.Intersect(serieGeneres).ToList();
+            var movieAndSeriesGenres = commonGenres.Concat(movieGeneres.Except(commonGenres)).Concat(serieGeneres.Except(commonGenres));
+            var newGenres = movieAndSeriesGenres.Except(genres).ToList();
+
+            // update the configuration if any new genres
+            if (newGenres.Count > 0)
+            {
+                Plugin.Instance.Configuration.Genres = Plugin.Instance.Configuration.Genres.Concat(newGenres.Select(genreName => new GenreConfig()
+                {
+                    Name = genreName,
+                    LocalSource = null
+                })).ToList();
+                Plugin.Instance.SaveConfiguration(Plugin.Instance.Configuration);
+                Plugin.Instance.UpdateConfiguration(Plugin.Instance.Configuration);
+            }
+        }
+
         public async Task<IEnumerable<IntroInfo>> Get(List<GenreConfig>? genreConfigs = null)
         {
             // only relevant on first installation
@@ -271,22 +299,24 @@ namespace Jellyfin.Plugin.Prerolls
             {
                 path = Local(Plugin.Instance.Configuration.Local);
             }
-            else if (Plugin.Instance.Configuration.Vimeo != string.Empty)
-            {
-                var options = Plugin.Instance.Configuration.Vimeo.Split(',');
-                int.TryParse(GetRandom(options), out selection);
+            // else if (Plugin.Instance.Configuration.Vimeo != string.Empty)
+            // {
+            //     var options = Plugin.Instance.Configuration.Vimeo.Split(',');
+            //     int.TryParse(GetRandom(options), out selection);
 
-                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
-            }
-            else if (Plugin.Instance.Configuration.Random)
-            {
-                selection = GetRandom(_prerolls);
-                path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
-            }
+            //     path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
+            // }
+            // else if (Plugin.Instance.Configuration.Random)
+            // {
+            //     selection = GetRandom(_prerolls);
+            //     path = GetPrerollPath(selection, Plugin.Instance.Configuration.Resolution);
+            // }
 
             if (!File.Exists(path))
             {
-                _Logger.LogWarning($"Could not find the path for preroll: {path}! using default preroll");
+                _Logger.LogError($"No preroll found: {path}!");
+                return new List<IntroInfo>();
+                //_Logger.LogWarning($"Could not find the path for preroll: {path}! using default preroll");
                 //Cache(selection != 0 ? selection : 375468729);
             }
 

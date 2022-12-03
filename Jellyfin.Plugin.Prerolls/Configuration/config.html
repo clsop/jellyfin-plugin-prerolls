@@ -1,36 +1,32 @@
-    <div
-      id="configPage"
-      data-role="page"
-      class="page type-interior pluginPage"
-      data-require="emby-input,emby-button,emby-select,emby-checkbox"
-    >
-      <div data-role="content">
-        <div class="content-primary">
-          <form id="configForm">
-            <p>
-              Only videos from
-              <a
-                is="emby-linkbutton"
-                class="button-link emby-button"
-                target="_blank"
-                href="https://prerolls.video"
-                >prerolls.video</a
-              >
-              are used, and the files themselves are pulled from Vimeo directly.
-            </p>
-            <div class="inputContainer">
-              <label class="inputLabel" for="local">Local Source</label>
-              <input
-                id="local"
-                is="emby-input"
-                placeholder="/var/cache/jellyfin"
-              />
-              <div class="fieldDescription">
-                Add a file or directory to use files instead of remote videos.
-                Items in a directory will be randomized.
-              </div>
-            </div>
-            <div class="inputContainer">
+<div
+  id="configPage"
+  data-role="page"
+  class="page type-interior pluginPage"
+  data-require="emby-input,emby-button,emby-select,emby-checkbox"
+>
+  <div data-role="content">
+    <div class="content-primary">
+      <form id="configForm">
+        <p>
+          Only videos from
+          <a
+            is="emby-linkbutton"
+            class="button-link emby-button"
+            target="_blank"
+            href="https://prerolls.video"
+            >prerolls.video</a
+          >
+          are used, and the files themselves are pulled from Vimeo directly.
+        </p>
+        <div class="inputContainer">
+          <label class="inputLabel" for="local">Local Source</label>
+          <input id="local" is="emby-input" placeholder="/var/cache/jellyfin" />
+          <div class="fieldDescription">
+            Add a file or directory to use files instead of remote videos. Items
+            in a directory will be randomized.
+          </div>
+        </div>
+        <!-- <div class="inputContainer">
               <label class="inputLabel" for="vimeo">Vimeo IDs</label>
               <input
                 id="vimeo"
@@ -157,206 +153,223 @@
                 <input id="random" type="checkbox" is="emby-checkbox" />
                 <span>Randomize Prerolls</span>
               </label>
-            </div>
-            <div class="checkboxContainer checkboxContainer-withDescription">
-              <label class="emby-checkbox-label">
-                <input id="useGenres" type="checkbox" is="emby-checkbox" />
-                <span>Preroll by genre</span>
-              </label>
-              <div class="fieldDescription">
-                Categorize prerolls by genre with a random pick (requires local
-                path).
-              </div>
-            </div>
-            <div id="genres"></div>
-            <button
-              is="emby-button"
-              type="submit"
-              class="raised button-submit block emby-button"
-            >
-              <span>Save</span>
-            </button>
-          </form>
+            </div> -->
+        <div class="checkboxContainer checkboxContainer-withDescription">
+          <label class="emby-checkbox-label">
+            <input id="useGenres" type="checkbox" is="emby-checkbox" />
+            <span>Preroll by genre</span>
+          </label>
+          <div class="fieldDescription">
+            Categorize prerolls by genre with a random pick (requires local
+            path).
+          </div>
         </div>
-      </div>
-      <script type="text/javascript">
-        var plugin = {
-          guid: "40ebce45-fe78-4e84-b819-3a9f537da73c",
-        };
-
-        function generateGenreHtml(genreConfig) {
-          var name = genreConfig.Name.toLowerCase();
-          var inputId = name + "Path";
-
-          var genreCollapsible = document.createElement("div");
-          genreCollapsible.id = name + "Block";
-          genreCollapsible.className = "editableListviewContainer";
-          genreCollapsible.style = "margin-top: 3em";
-
-          var genreTitle = document.createElement("h2");
-          genreTitle.style =
-            "margin: .6em 0; vertical-align: middle; display: inline-block";
-          genreTitle.textContent = genreConfig.Name;
-
-          var inputContainer = document.createElement("div");
-          inputContainer.className = "inputContainer";
-
-          var inputLabel = document.createElement("label");
-          inputLabel.setAttribute("for", inputId);
-          inputLabel.className = "inputLabel";
-          inputLabel.textContent = "Local Source";
-
-          var input = document.createElement("input");
-          input.setAttribute("is", "emby-input");
-          input.placeholder = "set local path for prerolls with this genre";
-          input.id = inputId;
-          input.value = genreConfig.LocalSource ? genreConfig.LocalSource : null;
-
-          inputContainer.appendChild(inputLabel);
-          inputContainer.appendChild(input);
-          genreCollapsible.appendChild(genreTitle);
-          genreCollapsible.appendChild(inputContainer);
-
-          return genreCollapsible;
-        }
-
-        document
-          .querySelector("#configPage")
-          .addEventListener("pageshow", function () {
-            Dashboard.showLoadingMsg();
-
-            ApiClient.getPluginConfiguration(plugin.guid).then(function (
-              config
-            ) {
-              function addGenres(element, genres) {
-                for (var genreConfig of config.Genres) {
-                  var genreElement = generateGenreHtml(genreConfig);
-                  element.appendChild(genreElement);
-                }
-              }
-
-              document.querySelector("#local").value = config.Local;
-              document.querySelector("#vimeo").value = config.Vimeo;
-              document.querySelector("#preroll").value = config.Preroll;
-              document.querySelector("#resolution").value = config.Resolution;
-              document.querySelector("#random").checked = config.Random;
-              document.querySelector("#useGenres").checked = config.UseGenres;
-
-              if (config.Local) {
-                document.querySelector("#vimeo").disabled = true;
-                document.querySelector("#preroll").disabled = true;
-                document.querySelector("#resolution").disabled = true;
-                document.querySelector("#random").disabled = true;
-                document.querySelector("#useGenres").disabled = false;
-              }
-
-              if (config.Vimeo) {
-                document.querySelector("#local").disabled = true;
-                document.querySelector("#preroll").disabled = true;
-                document.querySelector("#random").disabled = true;
-              }
-
-              if (config.Random) {
-                document.querySelector("#preroll").disabled = true;
-              }
-
-              if (config.UseGenres) {
-                addGenres(document.querySelector("#genres"), config.Genres);
-              }
-
-              document
-                .querySelector("#local")
-                .addEventListener("input", function () {
-                  var disabled = this.value !== "";
-
-                  if (disabled) document.querySelector("#vimeo").value = "";
-
-                  document.querySelector("#vimeo").disabled = disabled;
-                  document.querySelector("#preroll").disabled = disabled;
-                  document.querySelector("#resolution").disabled = disabled;
-                  document.querySelector("#random").disabled = disabled;
-                });
-
-              document
-                .querySelector("#vimeo")
-                .addEventListener("input", function () {
-                  var disabled = this.value !== "";
-
-                  if (disabled) document.querySelector("#local").value = "";
-
-                  document.querySelector("#local").disabled = disabled;
-                  document.querySelector("#preroll").disabled = disabled;
-                  document.querySelector("#random").disabled = disabled;
-                });
-
-              document
-                .querySelector("#random")
-                .addEventListener("click", function () {
-                  document.querySelector("#preroll").disabled = this.checked;
-                });
-
-              document
-                .querySelector("#useGenres")
-                .addEventListener("click", function () {
-                  var genresElement = document.querySelector("#genres");
-                  var disableOthers = this.checked;
-
-                  if (disableOthers) {
-                    addGenres(genresElement, config.Genres);
-
-                    document.querySelector("#local").disabled = disableOthers;
-                    document.querySelector("#vimeo").disabled = disableOthers;
-                    document.querySelector("#preroll").disabled = disableOthers;
-                    document.querySelector("#resolution").disabled =
-                      disableOthers;
-                    document.querySelector("#random").disabled = disableOthers;
-                  } else {
-                    genresElement.innerHTML = null;
-                    document.querySelector("#local").disabled = disableOthers;
-                    document.querySelector("#vimeo").disabled = disableOthers;
-                    document.querySelector("#preroll").disabled = disableOthers;
-                    document.querySelector("#resolution").disabled =
-                      disableOthers;
-                    document.querySelector("#random").disabled = disableOthers;
-                  }
-                });
-
-              Dashboard.hideLoadingMsg();
-            });
-          });
-
-        document
-          .querySelector("#configForm")
-          .addEventListener("submit", function (event) {
-            Dashboard.showLoadingMsg();
-            ApiClient.getPluginConfiguration(plugin.guid).then(function (
-              config
-            ) {
-              config.Local = document.querySelector("#local").value;
-              config.Vimeo = document.querySelector("#vimeo").value;
-              config.Preroll = document.querySelector("#preroll").value;
-              config.Resolution = document.querySelector("#resolution").value;
-              config.Random = document.querySelector("#random").checked;
-              config.UseGenres = document.querySelector("#useGenres").checked;
-
-              if (config.UseGenres) {
-                for (var genreConfig of config.Genres) {
-                  var genrePathInput = document.querySelector(
-                    "#" + genreConfig.Name.toLowerCase() + "Path"
-                  );
-                  genreConfig.LocalSource = genrePathInput ? genrePathInput.value : null;
-                }
-              }
-
-              ApiClient.updatePluginConfiguration(plugin.guid, config).then(
-                function (result) {
-                  Dashboard.processPluginConfigurationUpdateResult(result);
-                }
-              );
-            });
-
-            event.preventDefault();
-            return false;
-          });
-      </script>
+        <div id="genres"></div>
+        <button
+          is="emby-button"
+          type="submit"
+          class="raised button-submit block emby-button"
+        >
+          <span>Save</span>
+        </button>
+      </form>
     </div>
+  </div>
+  <script type="text/javascript">
+    var plugin = {
+      guid: "40ebce45-fe78-4e84-b819-3a9f537da73c",
+    };
+
+    function generateGenreHtml(genreConfig) {
+      var name = genreConfig.Name.toLowerCase();
+      var inputId = name + "Path";
+
+      var genreCollapsible = document.createElement("div");
+      genreCollapsible.id = name + "Block";
+      genreCollapsible.className = "editableListviewContainer";
+      genreCollapsible.style = "margin-top: 3em";
+
+      var genreTitle = document.createElement("h2");
+      genreTitle.style =
+        "margin: .6em 0; vertical-align: middle; display: inline-block";
+      genreTitle.textContent = genreConfig.Name;
+
+      var inputContainer = document.createElement("div");
+      inputContainer.className = "inputContainer";
+
+      var inputLabel = document.createElement("label");
+      inputLabel.setAttribute("for", inputId);
+      inputLabel.className = "inputLabel";
+      inputLabel.textContent = "Local Source";
+
+      var input = document.createElement("input");
+      input.setAttribute("is", "emby-input");
+      input.placeholder = "set local path for prerolls with this genre";
+      input.id = inputId;
+      input.value = genreConfig.LocalSource ? genreConfig.LocalSource : null;
+
+      inputContainer.appendChild(inputLabel);
+      inputContainer.appendChild(input);
+      genreCollapsible.appendChild(genreTitle);
+      genreCollapsible.appendChild(inputContainer);
+
+      return genreCollapsible;
+    }
+
+    document
+      .querySelector("#configPage")
+      .addEventListener("pageshow", function () {
+        Dashboard.showLoadingMsg();
+
+        ApiClient.getPluginConfiguration(plugin.guid).then(function (config) {
+          function addGenres(element, genres) {
+            for (var genreConfig of config.Genres) {
+              var genreElement = generateGenreHtml(genreConfig);
+              element.appendChild(genreElement);
+            }
+          }
+
+          var local = document.querySelector("#local");
+          var useGenres = document.querySelector("#useGenres");
+
+          local.value = config.Local;
+          // document.querySelector("#vimeo").value = config.Vimeo;
+          // document.querySelector("#preroll").value = config.Preroll;
+          // document.querySelector("#resolution").value = config.Resolution;
+          // document.querySelector("#random").checked = config.Random;
+          useGenres.checked = config.UseGenres;
+
+          if (config.Local) {
+            // document.querySelector("#vimeo").disabled = true;
+            // document.querySelector("#preroll").disabled = true;
+            // document.querySelector("#resolution").disabled = true;
+            // document.querySelector("#random").disabled = true;
+            useGenres.disabled = true;
+          }
+
+          // if (config.Vimeo) {
+          //   document.querySelector("#local").disabled = true;
+          //   document.querySelector("#preroll").disabled = true;
+          //   document.querySelector("#random").disabled = true;
+          // }
+
+          // if (config.Random) {
+          //   document.querySelector("#preroll").disabled = true;
+          // }
+
+          if (config.UseGenres) {
+            local.disabled = true;
+
+            addGenres(document.querySelector("#genres"), config.Genres);
+          }
+
+          local.addEventListener("input", function () {
+            var disabled = this.value !== "";
+
+            // if (disabled) document.querySelector("#vimeo").value = "";
+
+            // document.querySelector("#vimeo").disabled = disabled;
+            // document.querySelector("#preroll").disabled = disabled;
+            // document.querySelector("#resolution").disabled = disabled;
+            // document.querySelector("#random").disabled = disabled;
+            useGenres.disabled = disabled;
+          });
+
+          // document
+          //   .querySelector("#vimeo")
+          //   .addEventListener("input", function () {
+          //     var disabled = this.value !== "";
+
+          //     if (disabled) document.querySelector("#local").value = "";
+
+          //     document.querySelector("#local").disabled = disabled;
+          //     document.querySelector("#preroll").disabled = disabled;
+          //     document.querySelector("#random").disabled = disabled;
+          //   });
+
+          // document
+          //   .querySelector("#random")
+          //   .addEventListener("click", function () {
+          //     document.querySelector("#preroll").disabled = this.checked;
+          //   });
+
+          document
+            .querySelector("#useGenres")
+            .addEventListener("click", function () {
+              var genresElement = document.querySelector("#genres");
+              var disableOthers = this.checked;
+
+              if (disableOthers) {
+                addGenres(genresElement, config.Genres);
+
+                document.querySelector("#local").disabled = disableOthers;
+                // document.querySelector("#vimeo").disabled = disableOthers;
+                // document.querySelector("#preroll").disabled = disableOthers;
+                // document.querySelector("#resolution").disabled =
+                //   disableOthers;
+                // document.querySelector("#random").disabled = disableOthers;
+              } else {
+                genresElement.innerHTML = null;
+                document.querySelector("#local").disabled = disableOthers;
+                // document.querySelector("#vimeo").disabled = disableOthers;
+                // document.querySelector("#preroll").disabled = disableOthers;
+                // document.querySelector("#resolution").disabled =
+                //   disableOthers;
+                // document.querySelector("#random").disabled = disableOthers;
+              }
+            });
+
+          Dashboard.hideLoadingMsg();
+        });
+      });
+
+    document
+      .querySelector("#configForm")
+      .addEventListener("submit", function (event) {
+        ApiClient.getPluginConfiguration(plugin.guid).then(function (config) {
+          Dashboard.confirm(
+            "Save configuration ?",
+            null,
+            function (shouldSave) {
+              if (shouldSave) {
+                config.Local = document.querySelector("#local").value;
+                // config.Vimeo = document.querySelector("#vimeo").value;
+                // config.Preroll = document.querySelector("#preroll").value;
+                // config.Resolution = document.querySelector("#resolution").value;
+                // config.Random = document.querySelector("#random").checked;
+                config.UseGenres = document.querySelector("#useGenres").checked;
+
+                if (config.UseGenres) {
+                  for (var genreConfig of config.Genres) {
+                    var genrePathInput = document.querySelector(
+                      "#" + genreConfig.Name.toLowerCase() + "Path"
+                    );
+                    genreConfig.LocalSource = genrePathInput
+                      ? genrePathInput.value
+                      : null;
+                  }
+                }
+
+                Dashboard.showLoadingMsg();
+                ApiClient.updatePluginConfiguration(plugin.guid, config).then(
+                  function (result) {
+                    if (result.ok) {
+                      Dashboard.processPluginConfigurationUpdateResult();
+                    } else {
+                      Dashboard.alert("Failed to save configuration!");
+                    }
+
+                    Dashboard.hideLoadingMsg();
+                  }
+                );
+              }
+            }
+          );
+        });
+
+        event.preventDefault();
+        return false;
+      });
+  </script>
+</div>
+

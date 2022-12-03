@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
@@ -20,4 +20,9 @@
     <ProjectReference Include="..\Jellyfin.Plugin.Prerolls\Jellyfin.Plugin.Prerolls.csproj" />
   </ItemGroup>
 
+  <Target Name="copy test files" AfterTargets="Build">
+    <Message Text="Copying test files" Importance="Normal" />
+    <Copy SourceFiles="testfile" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+    <Message Text="Copied test files" Importance="Normal" />
+  </Target>
 </Project>

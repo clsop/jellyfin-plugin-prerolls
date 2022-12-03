@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 
 using FluentAssertions;
-using Jellyfin.Plugin.Prerolls.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
@@ -12,25 +10,30 @@ using MediaBrowser.Controller.Persistence;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+
+using Jellyfin.Plugin.Prerolls.Configuration;
 
 namespace Jellyfin.Plugin.Prerolls.Tests
 {
     [TestClass]
-    public class PluginTests
+    public class UpdateGenreTests
     {
         private static Mock<IApplicationPaths> _ApplicationPathsMock;
         private static Mock<IItemRepository> _ItemRepositoryMock;
         private static Mock<IXmlSerializer> _XmlSerializerMock;
         private static Mock<ILibraryManager> _LibraryManagerMock;
+        private static Mock<ILogger<PrerollManager>> _LoggerMock;
 
-        static PluginTests()
+        static UpdateGenreTests()
         {
             _ApplicationPathsMock = new Mock<IApplicationPaths>();
             _XmlSerializerMock = new Mock<IXmlSerializer>();
             _ItemRepositoryMock = new Mock<IItemRepository>();
             _LibraryManagerMock = new Mock<ILibraryManager>();
+            _LoggerMock = new Mock<ILogger<PrerollManager>>();
         }
 
         [ClassInitialize]
@@ -104,14 +107,15 @@ namespace Jellyfin.Plugin.Prerolls.Tests
             _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.IsSeries.HasValue && x.IsSeries.Value)))
                 .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(seriesGenres));
 
-            var plugin = new Plugin(
+            new Plugin(
                 applicationPaths: _ApplicationPathsMock.Object,
                 itemRepo: _ItemRepositoryMock.Object,
                 xmlSerializer: _XmlSerializerMock.Object,
                 libraryManager: _LibraryManagerMock.Object);
+            var prerollManager = new PrerollManager(_LoggerMock.Object);
 
             // Act
-            plugin.GetPages().ToList();
+            prerollManager.UpdateGenres(_ItemRepositoryMock.Object);
 
             // Assert
             Plugin.Instance.Configuration.Genres.Should().HaveCount(expectedGenreCount);
@@ -132,14 +136,15 @@ namespace Jellyfin.Plugin.Prerolls.Tests
             _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.IsMovie.HasValue && x.IsMovie.Value)))
                 .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(movieGenres));
 
-            var plugin = new Plugin(
+            new Plugin(
                 applicationPaths: _ApplicationPathsMock.Object,
                 itemRepo: _ItemRepositoryMock.Object,
                 xmlSerializer: _XmlSerializerMock.Object,
                 libraryManager: _LibraryManagerMock.Object);
+            var prerollManager = new PrerollManager(_LoggerMock.Object);
 
             // Act
-            plugin.GetPages().ToList();
+            prerollManager.UpdateGenres(_ItemRepositoryMock.Object);
 
             // Assert
             Plugin.Instance.Configuration.Genres.Should().HaveCount(expectedGenreCount);
@@ -170,14 +175,15 @@ namespace Jellyfin.Plugin.Prerolls.Tests
             _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.IsMovie.HasValue && x.IsMovie.Value)))
                 .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(movieGenres));
 
-            var plugin = new Plugin(
+            new Plugin(
                 applicationPaths: _ApplicationPathsMock.Object,
                 itemRepo: _ItemRepositoryMock.Object,
                 xmlSerializer: _XmlSerializerMock.Object,
                 libraryManager: _LibraryManagerMock.Object);
+            var prerollManager = new PrerollManager(_LoggerMock.Object);
 
             // Act
-            plugin.GetPages().ToList();
+            prerollManager.UpdateGenres(_ItemRepositoryMock.Object);
 
             // Assert
             Plugin.Instance.Configuration.Genres.Should().HaveCount(expectedGenreCount);

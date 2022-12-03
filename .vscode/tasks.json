@@ -94,7 +94,7 @@
       }
     },
     {
-      "label": "core_debug",
+      "label": "test_debug",
       "type": "process",
       "isBackground": true,
       "command": "dotnet",

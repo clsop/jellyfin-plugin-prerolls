@@ -38,28 +38,6 @@ namespace Jellyfin.Plugin.Prerolls
 
         public IEnumerable<PluginPageInfo> GetPages()
         {
-            // revalidate cached configuration
-            Plugin.Instance.SaveConfiguration(Plugin.Instance.Configuration);
-
-            var movieGeneres = this.ItemRepository.GetGenres(new InternalItemsQuery()
-            {
-                IsMovie = true
-            }).Items.Select(item => item.Item.Name);
-            var serieGeneres = ItemRepository.GetGenres(new InternalItemsQuery()
-            {
-                IsSeries = true
-            }).Items.Select(item => item.Item.Name);
-
-            var genres = Instance.Configuration.Genres.Select(x => x.Name);
-            var commonGenres = movieGeneres.Intersect(serieGeneres);
-            var movieAndSeriesGenres = commonGenres.Concat(movieGeneres.Except(commonGenres)).Concat(serieGeneres.Except(commonGenres));
-            var newGenres = movieAndSeriesGenres.Except(genres);
-            Instance.Configuration.Genres = Instance.Configuration.Genres.Concat(newGenres.Select(genreName => new GenreConfig()
-            {
-                Name = genreName,
-                LocalSource = null
-            })).ToList();
-
             yield return new PluginPageInfo
             {
                 Name = Name,
