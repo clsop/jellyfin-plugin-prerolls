@@ -1,26 +1,34 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# 
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jellyfin.Plugin.Prerolls", "Jellyfin.Plugin.Prerolls\Jellyfin.Plugin.Prerolls.csproj", "{DCD0C8B9-A493-4A66-B8EE-8748D430B660}"
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6DA1702F-07BE-4248-8557-84941AC7B702}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jellyfin.Plugin.Prerolls.Tests", "Jellyfin.Plugin.Prerolls.Tests\Jellyfin.Plugin.Prerolls.Tests.csproj", "{46F4F7A1-102A-4745-A046-972D5713113B}"
+Project("{6EC984D6-55D0-48E2-9A1B-774162CA0A69}") = "Jellyfin.Plugin.Prerolls", "src\Jellyfin.Plugin.Prerolls\Jellyfin.Plugin.Prerolls.csproj", "{DCD0C8B9-A493-4A66-B8EE-8748D430B660}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D841214D-157A-4B26-99A4-E5C2D19669E5}"
+EndProject
+Project("{6EC984D6-55D0-48E2-9A1B-774162CA0A69}") = "Jellyfin.Plugin.Prerolls.Tests", "test\Jellyfin.Plugin.Prerolls.Tests\Jellyfin.Plugin.Prerolls.Tests.csproj", "{46F4F7A1-102A-4745-A046-972D5713113B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DCD0C8B9-A493-4A66-B8EE-8748D430B660}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DCD0C8B9-A493-4A66-B8EE-8748D430B660}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DCD0C8B9-A493-4A66-B8EE-8748D430B660}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DCD0C8B9-A493-4A66-B8EE-8748D430B660}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A0EC3687-1E65-4E2C-913E-246BAB14D8F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A0EC3687-1E65-4E2C-913E-246BAB14D8F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A0EC3687-1E65-4E2C-913E-246BAB14D8F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A0EC3687-1E65-4E2C-913E-246BAB14D8F0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46F4F7A1-102A-4745-A046-972D5713113B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46F4F7A1-102A-4745-A046-972D5713113B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46F4F7A1-102A-4745-A046-972D5713113B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46F4F7A1-102A-4745-A046-972D5713113B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCD0C8B9-A493-4A66-B8EE-8748D430B660}.Debug|x64.ActiveCfg = Debug|x64
+		{DCD0C8B9-A493-4A66-B8EE-8748D430B660}.Debug|x64.Build.0 = Debug|x64
+		{DCD0C8B9-A493-4A66-B8EE-8748D430B660}.Release|x64.ActiveCfg = Release|x64
+		{DCD0C8B9-A493-4A66-B8EE-8748D430B660}.Release|x64.Build.0 = Release|x64
+		{46F4F7A1-102A-4745-A046-972D5713113B}.Debug|x64.ActiveCfg = Debug|x64
+		{46F4F7A1-102A-4745-A046-972D5713113B}.Debug|x64.Build.0 = Debug|x64
+		{46F4F7A1-102A-4745-A046-972D5713113B}.Release|x64.ActiveCfg = Release|x64
+		{46F4F7A1-102A-4745-A046-972D5713113B}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DCD0C8B9-A493-4A66-B8EE-8748D430B660} = {6DA1702F-07BE-4248-8557-84941AC7B702}
+		{46F4F7A1-102A-4745-A046-972D5713113B} = {D841214D-157A-4B26-99A4-E5C2D19669E5}
 	EndGlobalSection
 EndGlobal
