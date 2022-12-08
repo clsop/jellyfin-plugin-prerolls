@@ -1,5 +1,4 @@
 - Genres updated at startup and if new videos are added
 - More efficient video in db handling
 - Disable vimeo for now, until better api communication is implemented
-- TODO: Fixed config cached save
 - Unit tests added using Moq
