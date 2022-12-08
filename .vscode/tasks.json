@@ -19,7 +19,7 @@
       "type": "shell",
       "args": [
         "publish",
-        "${workspaceFolder}/${config:pluginName}/${config:pluginName}.csproj",
+        "${workspaceFolder}/src/${config:pluginName}/${config:pluginName}.csproj",
         "-o",
         "${workspaceFolder}/dist/plugins/${config:pluginName}",
         "--no-self-contained",
@@ -100,7 +100,6 @@
       "command": "dotnet",
       "args": ["test"],
       "options": {
-        "cwd": "${workspaceFolder}/Jellyfin.Plugin.Prerolls.Tests",
         "env": {
           "VSTEST_HOST_DEBUG": "1"
         }

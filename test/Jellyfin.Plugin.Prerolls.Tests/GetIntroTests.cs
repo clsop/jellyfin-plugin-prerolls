@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -71,6 +72,10 @@ namespace Jellyfin.Plugin.Prerolls.Tests
         {
             _ItemRepositoryMock.Setup(x => x.GetGenres(It.IsAny<InternalItemsQuery>()))
                 .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(new List<(BaseItem Item, ItemCounts ItemCounts)>()));
+            _LibraryManagerMock.Setup(x => x.GetItemList(It.IsAny<InternalItemsQuery>())).Returns(new List<BaseItem>()
+            {
+                new Video()
+            });
             _XmlSerializerMock.Setup(x => x.DeserializeFromBytes(It.IsAny<Type>(), It.IsAny<byte[]>())).Returns(new { });
             _XmlSerializerMock.Setup(x => x.DeserializeFromFile(It.IsAny<Type>(), It.IsAny<string>())).Returns(new { });
             _XmlSerializerMock.Setup(x => x.DeserializeFromStream(It.IsAny<Type>(), It.IsAny<Stream>())).Returns(new { });
@@ -83,17 +88,14 @@ namespace Jellyfin.Plugin.Prerolls.Tests
             _LibraryManagerMock.Reset();
         }
 
-        [TestMethod, Ignore("Cannot test static access to file path changing")]
+        [TestMethod]
+        [Ignore("Cannot test static access to file path changing")]
         public async Task Test_DeletePreroll_When_PathDoesntExist()
         {
             // Arrange
             var genreConfigMock = new Mock<GenreConfig>();
             genreConfigMock.SetupProperty(x => x.LocalSource).SetupSequence(x => x.LocalSource).Returns("testfile").Returns("/fake-path");
-            _LibraryManagerMock.Setup(x => x.GetItemList(It.IsAny<InternalItemsQuery>())).Returns(new List<BaseItem>()
-            {
-                new Video()
-            });
-
+            
             new Plugin(_ApplicationPathsMock.Object, _ItemRepositoryMock.Object, _XmlSerializerMock.Object, _LibraryManagerMock.Object);
             var prerollManager = new PrerollManager(_LoggerMock.Object);
 
@@ -108,16 +110,65 @@ namespace Jellyfin.Plugin.Prerolls.Tests
             })), Times.Once);
         }
 
-        [Ignore("TODO")]
         [TestMethod]
-        public void Test_SelectRandomGenre_When_Enabled()
+        public async Task Test_SelectRandomGenre_When_Enabled()
         {
+            // Arrange
+            var genreConfigs = new List<GenreConfig>()
+            {
+                new GenreConfig()
+                {
+                    Name = "Test",
+                    LocalSource = "testFiles/testfile"
+                },
+                new GenreConfig()
+                {
+                    Name = "Test 2",
+                    LocalSource = "testFiles/testfile2"
+                },
+                new GenreConfig()
+                {
+                    Name = "Test 3",
+                    LocalSource = "testFiles/testfile3"
+                }
+            };
+            
+            new Plugin(_ApplicationPathsMock.Object, _ItemRepositoryMock.Object, _XmlSerializerMock.Object, _LibraryManagerMock.Object);
+            var prerollManager = new PrerollManager(_LoggerMock.Object);
+
+            // Act
+            var result = await prerollManager.Get(genreConfigs);
+
+            // Assert
+            genreConfigs.Should().Contain(x => x.LocalSource == result.First().Path);
         }
 
-        [Ignore("TODO")]
         [TestMethod]
-        public void Test_SelectRandomPreroll_WhenGenres_Enabled()
+        public async Task Test_SelectRandomPreroll_WhenGenres_Enabled()
         {
+            // Arrange
+            var fileNames = new string[] {
+                "testFiles/testfile",
+                "testFiles/testfile2",
+                "testFiles/testfile3"
+            };
+            var genreConfigs = new List<GenreConfig>()
+            {
+                new GenreConfig()
+                {
+                    Name = "Test",
+                    LocalSource = "testFiles"
+                },
+            };
+
+            new Plugin(_ApplicationPathsMock.Object, _ItemRepositoryMock.Object, _XmlSerializerMock.Object, _LibraryManagerMock.Object);
+            var prerollManager = new PrerollManager(_LoggerMock.Object);
+
+            // Act
+            var result = await prerollManager.Get(genreConfigs);
+
+            // Assert
+            fileNames.Should().Contain(fileName => fileName == result.First().Path);
         }
 
         // TODO: vimeo
@@ -127,10 +178,19 @@ namespace Jellyfin.Plugin.Prerolls.Tests
         {
         }
 
-        [Ignore("TODO")]
         [TestMethod]
-        public void Test_ErrorOn_NoDefaultPreroll()
+        public async Task Test_ErrorOn_NoDefaultPreroll()
         {
+            // Arrange
+            new Plugin(_ApplicationPathsMock.Object, _ItemRepositoryMock.Object, _XmlSerializerMock.Object, _LibraryManagerMock.Object);
+            var prerollManager = new PrerollManager(_LoggerMock.Object);
+
+            // Act
+            var result = await prerollManager.Get();
+
+            // Assert
+            _LoggerMock.Verify(x => x.Log<string>(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<string>(), It.IsAny<Exception?>(), It.IsAny<Func<string, Exception?, string>>()), Times.Once);
+            result.Should().HaveCount(0);
         }
     }
 }

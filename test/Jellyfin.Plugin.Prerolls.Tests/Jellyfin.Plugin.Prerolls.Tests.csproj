@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
@@ -22,7 +22,9 @@
 
   <Target Name="copy test files" AfterTargets="Build">
     <Message Text="Copying test files" Importance="Normal" />
-    <Copy SourceFiles="testfile" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+    <Copy SourceFiles="testfile" DestinationFolder="$(OutputPath)/testFiles" ContinueOnError="true" />
+    <Copy SourceFiles="testfile2" DestinationFolder="$(OutputPath)/testFiles" ContinueOnError="true" />
+    <Copy SourceFiles="testfile3" DestinationFolder="$(OutputPath)/testFiles" ContinueOnError="true" />
     <Message Text="Copied test files" Importance="Normal" />
   </Target>
 </Project>
