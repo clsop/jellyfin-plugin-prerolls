@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: ["6.0.x", "7.0.x"]
+        dotnet-version: ["6.0.x"]
     steps:
       - name: Repository
         uses: actions/checkout@v3
@@ -43,7 +43,7 @@ jobs:
       - name: Compress
         env:
           version: ${{ steps.variables.outputs.version }}
-        run: zip jellyfin-plugin-prerolls-${version}.zip src/Jellyfin.Plugin.Prerolls/bin/Release/Jellyfin.Plugin.Prerolls.dll
+        run: zip jellyfin-plugin-prerolls-${version}.zip src/Jellyfin.Plugin.Prerolls/bin/**/Jellyfin.Plugin.Prerolls.dll
       - name: Checksum
         env:
           version: ${{ steps.variables.outputs.version }}
