@@ -7,11 +7,7 @@ on:
       - v*
 jobs:
   publish:
-    #if: startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: ["6.0.x"]
     steps:
       - name: Repository
         uses: actions/checkout@v3
@@ -20,10 +16,10 @@ jobs:
       - name: Variables
         id: variables
         run: echo release_version=$(git describe --tags --always --abbrev=0) >> $GITHUB_ENV
-      - name: Setup .NET SDK ${{ matrix.dotnet-version }}
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: '6.0.x'
       - name: Cache
         uses: actions/cache@v3
         with:
@@ -33,38 +29,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget
       - name: Install dependencies
-        run: dotnet restore
+        run: dotnet restore --use-lock-file
       - name: Build
         run: dotnet build --configuration Release --no-restore
-      # - name: Test
-      #   run: dotnet test --no-restore --verbosity normal
-      # - name: Move
-      #   run: mv src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll .
       - name: Compress
-        # env:
-        #   version: ${{ steps.variables.outputs.version }}
-        run: zip "jellyfin-plugin-prerolls-${{ env.release_version }}.zip" src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
-      - name: Checksum
-        # env:
-        #   version: ${{ steps.variables.outputs.version }}
-        run: echo "checksum=$(md5sum jellyfin-plugin-prerolls-${{ env.release_version }}.zip)" >> $GITHUB_ENV
+        run: zip -D "jellyfin-plugin-prerolls-${{ env.release_version }}.zip" src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
+      - name: Generate checksum
+        run: echo "checksum=$(md5sum jellyfin-plugin-prerolls-${{ env.release_version }}.zip | sed 's/ .*//')" >> $GITHUB_ENV
       # - name: Metadata
       #   uses: # TODO: read text files seperately
       #   id: changelog
       #   with:
       #     files: 'metadata/'
       #     pattern: '.*\.txt'
-      - name: Manifest
+      - name: Compile manifest
         uses: jsdaniell/create-json@v1.2.2
         env:
-          versions: '[]' # TODO: replace with processed versions and previous releases
+          versions: '[]' # TODO: replace with processed versions json and previous releases checksums
         with:
           name: "manifest.json"
-          json: '[{"guid": "40ebce45-fe78-4e84-b819-3a9f537da73c", "name": "Prerolls", "overview": "Display flashy prerolls before movies and other videos", "description": "Select a flashy video to run before any video content.", "owner": "clsop", "category": "Other", "versions": ${{ env.versions }}'
+          json: '[{"guid": "40ebce45-fe78-4e84-b819-3a9f537da73c", "name": "Prerolls", "overview": "Display flashy prerolls before movies and other videos", "description": "Select a flashy video to run before any video content.", "owner": "clsop", "category": "Other", "versions": ${{ env.versions }}}]'
       - name: Publish
         uses: ncipollo/release-action@v1
-        # env:
-        #   version: ${{ steps.variables.outputs.version }}
         with:
           artifacts: "*.zip,manifest.json"
           artifactContentType: zip
