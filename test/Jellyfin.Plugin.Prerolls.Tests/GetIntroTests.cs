@@ -13,6 +13,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Mock;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -189,7 +190,7 @@ namespace Jellyfin.Plugin.Prerolls.Tests
             var result = await prerollManager.Get();
 
             // Assert
-            _LoggerMock.Verify(x => x.Log<string>(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<string>(), It.IsAny<Exception?>(), It.IsAny<Func<string, Exception?, string>>()), Times.Once);
+            _LoggerMock.VerifyLog().ErrorWasCalled();
             result.Should().HaveCount(0);
         }
     }
