@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
       - name: Variables
         id: variables
-        run: echo version=$(git describe --tags --always --abbrev=0) >> $GITHUB_ENV
+        run: echo release_version=$(git describe --tags --always --abbrev=0) >> $GITHUB_ENV
       - name: Setup .NET SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v3
         with:
@@ -43,11 +43,11 @@ jobs:
       - name: Compress
         # env:
         #   version: ${{ steps.variables.outputs.version }}
-        run: zip "jellyfin-plugin-prerolls-${{ env.version }}.zip" src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
+        run: zip "jellyfin-plugin-prerolls-${{ env.release_version }}.zip" src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
       - name: Checksum
         # env:
         #   version: ${{ steps.variables.outputs.version }}
-        run: echo "checksum=$(md5sum jellyfin-plugin-prerolls-${{ env.version }}.zip)" >> $GITHUB_ENV
+        run: echo "checksum=$(md5sum jellyfin-plugin-prerolls-${{ env.release_version }}.zip)" >> $GITHUB_ENV
       # - name: Metadata
       #   uses: # TODO: read text files seperately
       #   id: changelog
@@ -68,8 +68,8 @@ jobs:
         with:
           artifacts: "*.zip,manifest.json"
           artifactContentType: zip
-          tag: ${{ env.version }}
+          tag: ${{ env.release_version }}
           commit: ${{ github.sha }}
           token: ${{ github.token }}
-          bodyFile: metadata/${{ env.version }}.txt
+          bodyFile: metadata/${{ env.release_version }}.txt
 
