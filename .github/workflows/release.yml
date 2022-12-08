@@ -39,11 +39,11 @@ jobs:
       # - name: Test
       #   run: dotnet test --no-restore --verbosity normal
       # - name: Move
-      #   run: mv src/Jellyfin.Plugin.Prerolls/bin/*/*/Jellyfin.Plugin.Prerolls.dll .
+      #   run: mv src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll .
       - name: Compress
         env:
           version: ${{ steps.variables.outputs.version }}
-        run: zip jellyfin-plugin-prerolls-${version}.zip src/Jellyfin.Plugin.Prerolls/bin/**/Jellyfin.Plugin.Prerolls.dll
+        run: zip jellyfin-plugin-prerolls-${version}.zip src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
       - name: Checksum
         env:
           version: ${{ steps.variables.outputs.version }}
