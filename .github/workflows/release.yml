@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
       - name: Variables
         id: variables
-        run: echo ::set-output name=version::$(git describe --tags --always --abbrev=0)
+        run: echo version=$(git describe --tags --always --abbrev=0) >> $GITHUB_ENV
       - name: Setup .NET SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v3
         with:
@@ -41,13 +41,13 @@ jobs:
       # - name: Move
       #   run: mv src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll .
       - name: Compress
-        env:
-          version: ${{ steps.variables.outputs.version }}
-        run: zip jellyfin-plugin-prerolls-${version}.zip src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
+        # env:
+        #   version: ${{ steps.variables.outputs.version }}
+        run: zip "jellyfin-plugin-prerolls-${{ env.version }}.zip" src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
       - name: Checksum
-        env:
-          version: ${{ steps.variables.outputs.version }}
-        run: echo ::set-output name=checksum::$(md5sum jellyfin-plugin-prerolls-${version}.zip)
+        # env:
+        #   version: ${{ steps.variables.outputs.version }}
+        run: echo "checksum=$(md5sum jellyfin-plugin-prerolls-${{ env.version }}.zip)" >> $GITHUB_ENV
       # - name: Metadata
       #   uses: # TODO: read text files seperately
       #   id: changelog
@@ -63,13 +63,13 @@ jobs:
           json: '[{"guid": "40ebce45-fe78-4e84-b819-3a9f537da73c", "name": "Prerolls", "overview": "Display flashy prerolls before movies and other videos", "description": "Select a flashy video to run before any video content.", "owner": "clsop", "category": "Other", "versions": ${{ env.versions }}'
       - name: Publish
         uses: ncipollo/release-action@v1
-        env:
-          version: ${{ steps.variables.outputs.version }}
+        # env:
+        #   version: ${{ steps.variables.outputs.version }}
         with:
           artifacts: "*.zip,manifest.json"
           artifactContentType: zip
-          tag: ${version}
+          tag: ${{ env.version }}
           commit: ${{ github.sha }}
           token: ${{ github.token }}
-          bodyFile: metadata/${version}.txt
+          bodyFile: metadata/${{ env.version }}.txt
 
