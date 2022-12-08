@@ -57,7 +57,7 @@ jobs:
       - name: Manifest
         uses: jsdaniell/create-json@v1.2.2
         env:
-          versions: ${{ [] }} # TODO: replace with processed versions and previous releases
+          versions: '[]' # TODO: replace with processed versions and previous releases
         with:
           name: "manifest.json"
           json: '[{"guid": "40ebce45-fe78-4e84-b819-3a9f537da73c", "name": "Prerolls", "overview": "Display flashy prerolls before movies and other videos", "description": "Select a flashy video to run before any video content.", "owner": "clsop", "category": "Other", "versions": ${{ env.versions }}'
