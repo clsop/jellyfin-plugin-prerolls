@@ -13,9 +13,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Variables
-        id: variables
-        run: echo release_version=$(git describe --tags --always --abbrev=0) >> $GITHUB_ENV
+      - name: Set release version
+        run: echo release_version=${{ git describe --tags --always --abbrev=0 }} >> $GITHUB_ENV
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
@@ -24,7 +23,6 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
-          # Look to see if there is a cache hit for the corresponding requirements file
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget
@@ -33,29 +31,69 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Compress
-        run: zip -D "jellyfin-plugin-prerolls-${{ env.release_version }}.zip" src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
-      - name: Generate checksum
-        run: echo "checksum=$(md5sum jellyfin-plugin-prerolls-${{ env.release_version }}.zip | sed 's/ .*//')" >> $GITHUB_ENV
-      # - name: Metadata
-      #   uses: # TODO: read text files seperately
-      #   id: changelog
-      #   with:
-      #     files: 'metadata/'
-      #     pattern: '.*\.txt'
-      - name: Compile manifest
-        uses: jsdaniell/create-json@v1.2.2
-        env:
-          versions: '[]' # TODO: replace with processed versions json and previous releases checksums
-        with:
-          name: "manifest.json"
-          json: '[{"guid": "40ebce45-fe78-4e84-b819-3a9f537da73c", "name": "Prerolls", "overview": "Display flashy prerolls before movies and other videos", "description": "Select a flashy video to run before any video content.", "owner": "clsop", "category": "Other", "versions": ${{ env.versions }}}]'
-      - name: Publish
+        run: zip -j "jellyfin-plugin-prerolls-${{ env.release_version }}.zip" src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
+      - name: Create release
+        id: release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "*.zip,manifest.json"
+          artifacts: "*.zip"
           artifactContentType: zip
           tag: ${{ env.release_version }}
           commit: ${{ github.sha }}
           token: ${{ github.token }}
           bodyFile: metadata/${{ env.release_version }}.txt
-
+  manifest:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        release: ['v1.4.1.1', 'v1.4.1.2', 'v1.4.2']
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ matrix.release }}
+          fetch-depth: 0
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget
+      - name: Install dependencies
+        run: dotnet restore --use-lock-file
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Compress
+        run: zip -j "jellyfin-plugin-prerolls-${{ matrix.release }}.zip" src/Jellyfin.Plugin.Prerolls/bin/x64/*/*/Jellyfin.Plugin.Prerolls.dll
+      - name: Generate checksum
+        id: checksum
+        run: echo "value=$(md5sum jellyfin-plugin-prerolls-${{ matrix.release }}.zip | sed 's/ .*//')" >> $GITHUB_OUTPUT
+      - name: Metadata
+        uses: juliangruber/read-file-action@v1
+        id: changelog
+        with:
+          path: 'metadata/${{ matrix.release }}.txt'
+      - name: Compile manifest
+        uses: jsdaniell/create-json@v1.2.2
+        env:
+          versions: '[{ "version": "${{ matrix.release }}", "changelog": "${{ steps.changelog.outputs.content }}", "targetAbi": "10.8.0.0", "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/${{ matrix.release }}/jellyfin-plugin-prerolls-${{ matrix.release }}.zip", "checksum": "${{ steps.checksum.outputs.value }}" }]'
+        with:
+          name: "manifest.json"
+          json: '[{"guid": "40ebce45-fe78-4e84-b819-3a9f537da73c", "name": "Prerolls", "overview": "Display flashy prerolls before movies and other videos", "description": "Select a flashy video to run before any video content.", "owner": "clsop", "category": "Other", "versions": ${{ env.versions }}}]'
+      - name: Update release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          replacesArtifacts: true
+          removeArtifacts: false
+          artifacts: "manifest.json"
+          artifactContentType: json
+          tag: ${{ matrix.version }}
+          commit: ${{ github.sha }}
+          token: ${{ github.token }}
+          bodyFile: metadata/${{ matrix.release }}.txt
