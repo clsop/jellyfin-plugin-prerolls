@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Compress
-        run: zip -j "jellyfin-plugin-prerolls-${{ env.release_version }}.zip" src/Jellyfin.Plugin.Prerolls/bin/**/*/Jellyfin.Plugin.Prerolls.dll
+        run: zip -j "jellyfin-plugin-prerolls-${{ env.release_version }}.zip" src/Jellyfin.Plugin.Prerolls/bin/**/Jellyfin.Plugin.Prerolls.dll
       - name: Create release
         id: release
         uses: ncipollo/release-action@v1
