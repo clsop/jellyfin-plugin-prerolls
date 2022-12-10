@@ -75,14 +75,14 @@ jobs:
         id: checksum
         run: echo "value=$(md5sum jellyfin-plugin-prerolls-${{ matrix.release }}.zip | sed 's/ .*//')" >> $GITHUB_OUTPUT
       - name: Metadata
-        uses: juliangruber/read-file-action@v1
+        uses: bfren/read-file@v1
         id: changelog
         with:
-          path: ./metadata/${{ matrix.release }}.txt
+          file: ./metadata/${{ matrix.release }}.txt
       - name: Compile manifest
         uses: jsdaniell/create-json@v1.2.2
         env:
-          versions: '[{ "version": "${{ matrix.release }}", "changelog": "${{ steps.changelog.outputs.content }}", "targetAbi": "10.8.0.0", "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/${{ matrix.release }}/jellyfin-plugin-prerolls-${{ matrix.release }}.zip", "checksum": "${{ steps.checksum.outputs.value }}" }]'
+          versions: '[{ "version": "${{ matrix.release }}", "changelog": "${{ steps.changelog.outputs.contents }}", "targetAbi": "10.8.0.0", "sourceUrl": "https://github.com/clsop/jellyfin-plugin-prerolls/releases/download/${{ matrix.release }}/jellyfin-plugin-prerolls-${{ matrix.release }}.zip", "checksum": "${{ steps.checksum.outputs.value }}" }]'
         with:
           name: "manifest.json"
           json: '[{"guid": "40ebce45-fe78-4e84-b819-3a9f537da73c", "name": "Prerolls", "overview": "Display flashy prerolls before movies and other videos", "description": "Select a flashy video to run before any video content.", "owner": "clsop", "category": "Other", "versions": ${{ env.versions }}}]'
