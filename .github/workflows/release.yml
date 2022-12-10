@@ -78,7 +78,7 @@ jobs:
         uses: juliangruber/read-file-action@v1
         id: changelog
         with:
-          path: ${{ github.workspace }}/metadata/${{ matrix.release }}.txt
+          path: ${{ github.workspace }}/../metadata/${{ matrix.release }}.txt
       - name: Compile manifest
         uses: jsdaniell/create-json@v1.2.2
         env:
