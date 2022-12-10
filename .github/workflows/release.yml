@@ -41,7 +41,7 @@ jobs:
           tag: ${{ env.release_version }}
           commit: ${{ github.sha }}
           token: ${{ github.token }}
-          bodyFile: metadata/${{ env.release_version }}.txt
+          bodyFile: '$GITHUB_WORKSPACE/${{ github.repository }}/metadata/${{ env.release_version }}.txt'
   manifest:
     runs-on: ubuntu-latest
     strategy:
@@ -78,7 +78,7 @@ jobs:
         uses: juliangruber/read-file-action@v1
         id: changelog
         with:
-          path: '$GITHUB_WORKSPACE/metadata/${{ matrix.release }}.txt'
+          path: '$GITHUB_WORKSPACE/${{ github.repository }}/metadata/${{ matrix.release }}.txt'
       - name: Compile manifest
         uses: jsdaniell/create-json@v1.2.2
         env:
