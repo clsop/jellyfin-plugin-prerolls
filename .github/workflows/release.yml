@@ -70,7 +70,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Compress
-        run: zip -j "jellyfin-plugin-prerolls-${{ matrix.release }}.zip" $(find src/Jellyfin.Plugin.Prerolls/bin -iname Jellyfin.Plugin.Prerolls.dll)
+        run: zip -j "jellyfin-plugin-prerolls-${{ matrix.release }}.zip" $(find . -iwholename */bin/*/Jellyfin.Plugin.Prerolls.dll)
       - name: Generate checksum
         id: checksum
         run: echo "value=$(md5sum jellyfin-plugin-prerolls-${{ matrix.release }}.zip | sed 's/ .*//')" >> $GITHUB_OUTPUT
