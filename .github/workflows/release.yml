@@ -78,7 +78,7 @@ jobs:
         uses: bfren/read-file@v1
         id: changelog
         with:
-          file: ./metadata/${{ matrix.release }}.txt
+          file: ../metadata/${{ matrix.release }}.txt
       - name: Compile manifest
         uses: jsdaniell/create-json@v1.2.2
         env:
