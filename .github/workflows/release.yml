@@ -39,16 +39,15 @@ jobs:
           artifacts: "*.zip"
           artifactContentType: zip
           tag: ${{ env.release_version }}
-          commit: ${{ github.sha }}
-          token: ${{ github.token }}
-          bodyFile: '${{ github.workspace }}/metadata/${{ env.release_version }}.txt'
+          # commit: ${{ github.sha }}
+          # token: ${{ github.token }}
+          bodyFile: 'metadata/${{ env.release_version }}.txt'
   manifest:
     needs: publish
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1
       matrix:
-        release: ['v1.4.1.1', 'v1.4.1.2', 'v1.4.2']
+        release: ['v1.4.2']
     steps:
       - name: Repository checkout
         uses: actions/checkout@v3
@@ -71,7 +70,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Compress
-        run: zip -j "jellyfin-plugin-prerolls-${{ matrix.release }}.zip" $(find . -iwholename */bin/*/Jellyfin.Plugin.Prerolls.dll)
+        run: zip -j "jellyfin-plugin-prerolls-${{ matrix.release }}.zip" $(find src/Jellyfin.Plugin.Prerolls/bin -iname Jellyfin.Plugin.Prerolls.dll)
       - name: Generate checksum
         id: checksum
         run: echo "value=$(md5sum jellyfin-plugin-prerolls-${{ matrix.release }}.zip | sed 's/ .*//')" >> $GITHUB_OUTPUT
@@ -79,7 +78,7 @@ jobs:
         id: changelog
         uses: jaywcjlove/github-action-read-file@main
         with:
-          branch: feature/genre-prerolls
+          #branch: feature/genre-prerolls
           path: metadata/${{ matrix.release }}.txt
       - name: Compile manifest
         uses: jsdaniell/create-json@v1.2.2
@@ -98,5 +97,5 @@ jobs:
           artifactContentType: json
           tag: ${{ matrix.version }}
           #commit: ${{ github.sha }}
-          token: ${{ github.token }}
+          #token: ${{ github.token }}
           body: '${{ steps.changelog.outputs.content }}'
