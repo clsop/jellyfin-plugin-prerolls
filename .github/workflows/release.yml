@@ -97,6 +97,6 @@ jobs:
           artifacts: "manifest.json"
           artifactContentType: json
           tag: ${{ matrix.version }}
-          commit: ${{ github.sha }}
+          #commit: ${{ github.sha }}
           token: ${{ github.token }}
           body: '${{ steps.changelog.outputs.content }}'
