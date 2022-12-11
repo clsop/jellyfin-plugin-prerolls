@@ -43,6 +43,7 @@ jobs:
           token: ${{ github.token }}
           bodyFile: '${{ github.workspace }}/metadata/${{ env.release_version }}.txt'
   manifest:
+    needs: publish
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
@@ -91,7 +92,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          replacesArtifacts: true
+          replacesArtifacts: false
           removeArtifacts: false
           artifacts: "manifest.json"
           artifactContentType: json
