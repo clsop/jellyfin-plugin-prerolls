@@ -98,4 +98,4 @@ jobs:
           tag: ${{ matrix.version }}
           commit: ${{ github.sha }}
           token: ${{ github.token }}
-          bodyFile: '${{ github.workspace }}/metadata/${{ matrix.release }}.txt'
+          body: '${{ steps.changelog.outputs.content }}'
