@@ -39,7 +39,7 @@ jobs:
           artifacts: "*.zip"
           artifactContentType: zip
           tag: ${{ env.release_version }}
-          bodyFile: 'metadata/${{ env.release_version }}.txt'
+          bodyFile: 'metadata/release-${{ env.release_version }}.txt'
   manifest:
     needs: publish
     runs-on: ubuntu-latest
@@ -98,4 +98,3 @@ jobs:
           artifacts: "manifest.json"
           artifactContentType: json
           tag: ${{ matrix.version }}
-          body: '${{ steps.changelog.outputs.content }}'
