@@ -1,4 +1,1 @@
-- Genres updated at startup and if new videos are added
-- More efficient video in db handling
-- Disable vimeo for now, until better api communication is implemented
-- Unit tests added using Moq
+- Genres updated at startup and if new videos are added\n- More efficient video in db handling\n- Disable vimeo for now, until better api communication is implemented\n- Unit tests added using Moq

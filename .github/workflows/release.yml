@@ -39,8 +39,6 @@ jobs:
           artifacts: "*.zip"
           artifactContentType: zip
           tag: ${{ env.release_version }}
-          # commit: ${{ github.sha }}
-          # token: ${{ github.token }}
           bodyFile: 'metadata/${{ env.release_version }}.txt'
   manifest:
     needs: publish
@@ -78,7 +76,6 @@ jobs:
         id: changelog
         uses: jaywcjlove/github-action-read-file@main
         with:
-          #branch: feature/genre-prerolls
           path: metadata/${{ matrix.release }}.txt
       - name: Compile manifest
         uses: jsdaniell/create-json@v1.2.2
@@ -96,6 +93,4 @@ jobs:
           artifacts: "manifest.json"
           artifactContentType: json
           tag: ${{ matrix.version }}
-          #commit: ${{ github.sha }}
-          #token: ${{ github.token }}
           body: '${{ steps.changelog.outputs.content }}'
