@@ -274,7 +274,7 @@ namespace Jellyfin.Plugin.Prerolls
                     LocalSource = null
                 })).ToList();
 
-                _Logger.LogInformation($"Updating genres with: {newGenres}");
+                _Logger.LogInformation($"Updating genres with: {string.Join(',', newGenres)}");
                 Plugin.Instance.SaveConfiguration(Plugin.Instance.Configuration);
                 Plugin.Instance.UpdateConfiguration(Plugin.Instance.Configuration);
             }
