@@ -1,0 +1,118 @@
+{
+  // Paths and plugin name are configured in settings.json
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "release",
+      "dependsOrder": "sequence",
+      "dependsOn": ["make-plugin-dir", "build release"]
+    },
+    {
+      "label": "debug",
+      "dependsOrder": "sequence",
+      "dependsOn": ["make-plugin-dir", "publish debug"]
+    },
+    {
+      // Build the plugin
+      "label": "publish debug",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "publish",
+        "${workspaceFolder}/src/${config:pluginName}/${config:pluginName}.csproj",
+        "-o",
+        "${workspaceFolder}/dist/plugins/${config:pluginName}",
+        "--no-self-contained",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build release",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "build",
+        "${workspaceFolder}/${config:pluginName}.sln",
+        "--configuration",
+        "release"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      // Build jellyfin server
+      "label": "server-build",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "build",
+        "${workspaceFolder}/jellyfin/jellyfin/Jellyfin.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      // Build jellyfin web client
+      "label": "client-build",
+      "command": "${workspaceFolder}/jellyfin/web/build.sh",
+      "options": {
+        "cwd": "${workspaceFolder}/jellyfin/web"
+      },
+      "type": "shell",
+      "args": ["-t", "native", "-p", "portable"],
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      // Ensure the plugin directory exists before trying to use it
+      "label": "make-plugin-dir",
+      "type": "shell",
+      "linux": {
+        "command": "mkdir",
+        "args": ["-p", "${workspaceFolder}/dist/plugins/${config:pluginName}"]
+      },
+      "windows": {
+        "command": "mkdir",
+        "args": ["${workspaceFolder}/dist/plugins/${config:pluginName}"]
+      }
+    },
+    {
+      "label": "test_debug",
+      "type": "process",
+      "isBackground": true,
+      "command": "dotnet",
+      "args": ["test"],
+      "options": {
+        "env": {
+          "VSTEST_HOST_DEBUG": "1"
+        }
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
+

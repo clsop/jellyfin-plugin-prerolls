@@ -1,7 +1,15 @@
 # build
-bin
-obj
+**/bin
+**/obj
+**/artifacts
 
 # ide
 .idea
 .vs
+.vscode
+
+# test
+test/**/TestResults
+
+# jellyfin
+dist/
