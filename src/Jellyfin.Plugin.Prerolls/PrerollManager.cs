@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller.Entities;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Controller.Library;
 
 using Jellyfin.Plugin.Prerolls.Configuration;
@@ -250,20 +251,14 @@ namespace Jellyfin.Plugin.Prerolls
 
         public void UpdateGenres(IItemRepository itemRepository)
         {
-            var movieGeneres = itemRepository.GetGenres(new InternalItemsQuery()
+            var videoGeneres = itemRepository.GetGenres(new InternalItemsQuery()
             {
-                IsMovie = true
+                MediaTypes = new [] { MediaType.Video }
             }).Items.Select(item => item.Item.Name);
-            var serieGeneres = itemRepository.GetGenres(new InternalItemsQuery()
-            {
-                IsSeries = true
-            }).Items.Select(item => item.Item.Name);
-
+            
             // seperate old from new genres if any has been added to a library
             var genres = Plugin.Instance.Configuration.Genres.Select(x => x.Name);
-            var commonGenres = movieGeneres.Intersect(serieGeneres).ToList();
-            var movieAndSeriesGenres = commonGenres.Concat(movieGeneres.Except(commonGenres)).Concat(serieGeneres.Except(commonGenres));
-            var newGenres = movieAndSeriesGenres.Except(genres).ToList();
+            var newGenres = videoGeneres.Except(genres).ToList();
 
             // update the configuration if any new genres
             if (newGenres.Count > 0)

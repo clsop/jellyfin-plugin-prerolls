@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using FluentAssertions;
 using MediaBrowser.Common.Configuration;
@@ -8,6 +9,7 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Persistence;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
@@ -86,26 +88,23 @@ namespace Jellyfin.Plugin.Prerolls.Tests
         public void Test_WillOnly_GetVideoGenres()
         {
             // Arrange
-            var movieGenres = new List<(BaseItem, ItemCounts)>()
+            var videoGenres = new List<(BaseItem, ItemCounts)>()
             {
                 (new Genre() { Name = "Action" }, new ItemCounts() { MovieCount = 1 } ),
-                (new Genre() { Name = "Adventure" }, new ItemCounts() { MovieCount = 1 } )
-            };
-            var seriesGenres = new List<(BaseItem, ItemCounts)>()
-            {
+                (new Genre() { Name = "Adventure" }, new ItemCounts() { MovieCount = 1 } ),
                 (new Genre() { Name = "Comedy" }, new ItemCounts() { SeriesCount = 1 } ),
                 (new Genre() { Name = "Romance" }, new ItemCounts() { SeriesCount = 1 } )
             };
-            var musicGenres = new List<(BaseItem, ItemCounts)>()
+            var audioGenres = new List<(BaseItem, ItemCounts)>()
             {
                 (new Genre() { Name = "Rock" }, new ItemCounts() { ArtistCount = 2, SongCount = 3 } ),
                 (new Genre() { Name = "Pop" }, new ItemCounts() { ArtistCount = 3, SongCount = 4 } )
             };
-            var expectedGenreCount = movieGenres.Count + seriesGenres.Count;
-            _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.IsMovie.HasValue && x.IsMovie.Value)))
-                .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(movieGenres));
-            _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.IsSeries.HasValue && x.IsSeries.Value)))
-                .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(seriesGenres));
+            var expectedGenreCount = videoGenres.Count;
+            _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.MediaTypes.Contains(MediaType.Video))))
+                .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(videoGenres));
+            _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.MediaTypes.Contains(MediaType.Audio))))
+                .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(audioGenres));
 
             new Plugin(
                 applicationPaths: _ApplicationPathsMock.Object,
@@ -122,36 +121,7 @@ namespace Jellyfin.Plugin.Prerolls.Tests
         }
 
         [TestMethod]
-        public void Test_Will_FindNewGenres()
-        {
-            // Arrange
-            var config = new PluginConfiguration();
-            _XmlSerializerMock.Setup(x => x.DeserializeFromFile(It.IsAny<Type>(), It.IsAny<string>())).Returns(config);
-
-            var movieGenres = new List<(BaseItem, ItemCounts)>()
-            {
-                (new Genre() { Name = "Mystery" }, new ItemCounts() { MovieCount = 1 } )
-            };
-            var expectedGenreCount = movieGenres.Count;
-            _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.IsMovie.HasValue && x.IsMovie.Value)))
-                .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(movieGenres));
-
-            new Plugin(
-                applicationPaths: _ApplicationPathsMock.Object,
-                itemRepo: _ItemRepositoryMock.Object,
-                xmlSerializer: _XmlSerializerMock.Object,
-                libraryManager: _LibraryManagerMock.Object);
-            var prerollManager = new PrerollManager(_LoggerMock.Object);
-
-            // Act
-            prerollManager.UpdateGenres(_ItemRepositoryMock.Object);
-
-            // Assert
-            Plugin.Instance.Configuration.Genres.Should().HaveCount(expectedGenreCount);
-        }
-
-        [TestMethod]
-        public void Test_Will_MergeWithOldGenres()
+        public void Test_Will_MergeNewGenres()
         {
             // Arrange
             var config = new PluginConfiguration()
@@ -167,13 +137,13 @@ namespace Jellyfin.Plugin.Prerolls.Tests
             };
             _XmlSerializerMock.Setup(x => x.DeserializeFromFile(It.IsAny<Type>(), It.IsAny<string>())).Returns(config);
 
-            var movieGenres = new List<(BaseItem, ItemCounts)>()
+            var videoGenres = new List<(BaseItem, ItemCounts)>()
             {
                 (new Genre() { Name = "Adventure" }, new ItemCounts() { MovieCount = 2 } )
             };
-            var expectedGenreCount = config.Genres.Count + movieGenres.Count;
-            _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.IsMovie.HasValue && x.IsMovie.Value)))
-                .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(movieGenres));
+            var expectedGenreCount = config.Genres.Count + videoGenres.Count;
+            _ItemRepositoryMock.Setup(x => x.GetGenres(It.Is<InternalItemsQuery>(x => x.MediaTypes.Contains(MediaType.Video))))
+                .Returns(new QueryResult<(BaseItem Item, ItemCounts ItemCounts)>(videoGenres));
 
             new Plugin(
                 applicationPaths: _ApplicationPathsMock.Object,
