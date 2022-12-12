@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        release: ['1.4.2']
+        release: ['1.4.2.0']
     steps:
       - name: Repository checkout
         uses: actions/checkout@v3
