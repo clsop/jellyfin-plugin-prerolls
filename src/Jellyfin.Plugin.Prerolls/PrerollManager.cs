@@ -263,6 +263,7 @@ namespace Jellyfin.Plugin.Prerolls
             // update the configuration if any new genres
             if (newGenres.Count > 0)
             {
+                _Logger.LogInformation($"Will update genres");
                 Plugin.Instance.Configuration.Genres = Plugin.Instance.Configuration.Genres.Concat(newGenres.Select(genreName => new GenreConfig()
                 {
                     Name = genreName,

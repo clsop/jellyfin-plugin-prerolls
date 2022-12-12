@@ -21,7 +21,6 @@ namespace Jellyfin.Plugin.Prerolls
         public GenreUpdateProvider(ILogger<PrerollManager> logger, IItemRepository itemRepository)
         {
             _ItemRepository = itemRepository;
-            _Logger = logger;
             _Configuration = Plugin.Instance.Configuration;
             _PrerollManager = new PrerollManager(logger);
         }
@@ -33,7 +32,6 @@ namespace Jellyfin.Plugin.Prerolls
         // update genres after library scan (possibly new genres)
         public Task Run(IProgress<double> progress, CancellationToken cancellationToken) => Task.Run(() =>
         {
-            _Logger.LogInformation("Will update new genres.");
             _PrerollManager.UpdateGenres(this._ItemRepository);
             progress.Report(100);
         });
@@ -41,7 +39,6 @@ namespace Jellyfin.Plugin.Prerolls
         // update genres at startup
         public Task RunAsync() => Task.Run(() =>
         {
-            _Logger.LogInformation("Will update genres.");
             _PrerollManager.UpdateGenres(_ItemRepository);
         });
     }
